@@ -1,6 +1,6 @@
 # SZp (Also known as fZ-light)
 
-* Major authors: Jiajun Huang
+* Major author and developer: Jiajun Huang
 * Supervisor: Sheng Di
 
 This is the official repository of SZp, an ultra-fast error-bounded lossy compressor. The design and optimizations of SZp are published under the name fZ-light in SC '24.
