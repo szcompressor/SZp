@@ -3,7 +3,7 @@
 * Major author and developer: Jiajun Huang, Sheng Di
 * Supervisor: Sheng Di
 
-This is the official repository of SZp, an extreme-fast error-bounded lossy compressor: CPU version (supporting openMP). 
+This is the official repository of SZp, an extreme-fast error-bounded lossy compressor. It is a CPU compressor (supporting openMP). 
 The design and optimizations of SZp are published under the name fZ-light in SC '24.
 
 ## Installation
