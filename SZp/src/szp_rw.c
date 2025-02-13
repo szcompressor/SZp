@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_rw.c
+ *  @file szp_rw.c
  *  @author Sheng Di
  *  @date April, 2022
  *  @brief io interface for fortrance
@@ -13,10 +13,10 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include "hZCCL_rw.h"
-#include "hZCCL.h"
-#include "hZCCL_BytesToolkit.h"
-#include "hZCCL_dataCompression.h"
+#include "szp_rw.h"
+#include "szp.h"
+#include "szp_BytesToolkit.h"
+#include "szp_dataCompression.h"
 
 int checkFileExistance(char* filePath)
 {

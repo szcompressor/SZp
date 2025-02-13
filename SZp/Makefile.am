@@ -2,14 +2,14 @@
 #LDFLAGS=-fPIC -shared
 
 AUTOMAKE_OPTIONS=foreign
-include_HEADERS=include/hZCCL.h include/hZCCL_rw.h include/hZCCL_defines.h include/hZCCL_BytesToolkit.h include/hZCCL_TypeManager.h include/hZCCL_dataCompression.h include/hZCCL_utility.h include/hZCCL_float.h include/hZCCLd_float.h include/hZCCL_helper.h
+include_HEADERS=include/szp.h include/szp_rw.h include/szp_defines.h include/szp_BytesToolkit.h include/szp_TypeManager.h include/szp_dataCompression.h include/szp_utility.h include/szp_float.h include/szpd_float.h include/szp_helper.h
 
-lib_LTLIBRARIES=libhZCCL.la
-libhZCCL_la_CFLAGS=-I./include
+lib_LTLIBRARIES=libszp.la
+libszp_la_CFLAGS=-I./include
 if OPENMP
-libhZCCL_la_CFLAGS+=-fopenmp
+libszp_la_CFLAGS+=-fopenmp
 endif
-libhZCCL_la_LDFLAGS = -version-info  1:0:0
-libhZCCL_la_SOURCES=src/hZCCL.c src/hZCCL_rw.c src/hZCCL_BytesToolkit.c src/hZCCL_TypeManager.c src/hZCCL_dataCompression.c src/hZCCL_utility.c src/hZCCL_float.c src/hZCCLd_float.c src/hZCCL_helper.c
+libszp_la_LDFLAGS = -version-info  1:0:0
+libszp_la_SOURCES=src/szp.c src/szp_rw.c src/szp_BytesToolkit.c src/szp_TypeManager.c src/szp_dataCompression.c src/szp_utility.c src/szp_float.c src/szpd_float.c src/szp_helper.c
 
-libSZ_la_LINK= $(AM_V_CC)$(LIBTOOL) --tag=CC --mode=link $(CCLD) $(libhZCCL_la_CFLAGS) -O3 $(libhZCCL_la_LDFLAGS) -o $(lib_LTLIBRARIES)
+libSZ_la_LINK= $(AM_V_CC)$(LIBTOOL) --tag=CC --mode=link $(CCLD) $(libszp_la_CFLAGS) -O3 $(libszp_la_LDFLAGS) -o $(lib_LTLIBRARIES)

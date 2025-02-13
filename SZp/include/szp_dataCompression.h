@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_dataCompression.h
+ *  @file szp_dataCompression.h
  *  @author Sheng Di
  *  @date July, 2022
  *  @brief Header file for the dataCompression.c.
@@ -7,14 +7,14 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#ifndef _hZCCL_DataCompression_H
-#define _hZCCL_DataCompression_H
+#ifndef _szp_DataCompression_H
+#define _szp_DataCompression_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "hZCCL.h"
+#include "szp.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -63,5 +63,5 @@ int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigned char*
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_DataCompression_H  ----- */
+#endif /* ----- #ifndef _szp_DataCompression_H  ----- */
 

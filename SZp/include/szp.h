@@ -1,23 +1,23 @@
 /**
- *  @file hZCCL.h
+ *  @file szp.h
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
  *  @date Oct, 2023
  */
 
-#ifndef _hZCCL_H
-#define _hZCCL_H
+#ifndef _szp_H
+#define _szp_H
 
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/time.h>      /* For gettimeofday(), in microseconds */
 #include <time.h>          /* For time(), in seconds */
 #include <math.h>
-#include "hZCCL_rw.h"
-#include "hZCCL_utility.h"
-#include "hZCCL_defines.h"
-#include "hZCCL_float.h"
-#include "hZCCLd_float.h"
-#include "hZCCL_TypeManager.h"
+#include "szp_rw.h"
+#include "szp_utility.h"
+#include "szp_defines.h"
+#include "szp_float.h"
+#include "szpd_float.h"
+#include "szp_TypeManager.h"
 
 #ifdef _WIN32
 #define PATH_SEPARATOR ';'
@@ -29,10 +29,10 @@
 extern "C" {
 #endif
 
-#include "hZCCL_defines.h"
-#include "hZCCL_float.h"
-#include "hZCCLd_float.h"
-#include "hZCCL_TypeManager.h"
+#include "szp_defines.h"
+#include "szp_float.h"
+#include "szpd_float.h"
+#include "szp_TypeManager.h"
 
 typedef union lint16
 {
@@ -84,4 +84,4 @@ int filterDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_H  ----- */
+#endif /* ----- #ifndef _szp_H  ----- */

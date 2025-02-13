@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_utility.c
+ *  @file szp_utility.c
  *  @author Sheng Di
  *  @date Feb, 2022
  *  @brief 
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "hZCCL_utility.h"
+#include "szp_utility.h"
 
 struct timeval sz_costStart; /*only used for recording the cost*/
 double sz_totalCost = 0;

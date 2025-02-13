@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "hZCCL.h"
-#include "hZCCL_dataCompression.h"
-#include "hZCCL_BytesToolkit.h"
+#include "szp.h"
+#include "szp_dataCompression.h"
+#include "szp_BytesToolkit.h"
 
 int computeByteSizePerIntValue(long valueRangeSize)
 {

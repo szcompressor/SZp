@@ -1,12 +1,12 @@
 /**
- *  @file hZCCL_Float.h
- *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
+ *  @file szp_Float.h
+ *  @author Jiajun Huang, Sheng Di
  *  @date Oct, 2023
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "hZCCL.h"
+#include "szp.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
 
   size_t outSize;
   cost_start();
-  unsigned char *bytes = hZCCL_float_openmp_threadblock_randomaccess(data, &outSize, errBound, nbEle, blockSize);
-  // unsigned char *bytes = hZCCL_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
+  unsigned char *bytes = szp_float_openmp_threadblock_randomaccess(data, &outSize, errBound, nbEle, blockSize);
+  // unsigned char *bytes = szp_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
   printf("compression size = %zu, CR = %f\n", outSize, 1.0f * nbEle * sizeof(float) / outSize);

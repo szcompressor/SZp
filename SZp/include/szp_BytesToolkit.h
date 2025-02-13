@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_ByteToolkit.h
+ *  @file szp_ByteToolkit.h
  *  @author Sheng Di
  *  @date Feb, 2022
  *  @brief Header file for the ByteToolkit.c.
@@ -7,8 +7,8 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#ifndef _hZCCL_ByteToolkit_H
-#define _hZCCL_ByteToolkit_H
+#ifndef _szp_ByteToolkit_H
+#define _szp_ByteToolkit_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,5 +71,5 @@ void sizeToBytes(unsigned char* outBytes, size_t size);
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_ByteToolkit_H  ----- */
+#endif /* ----- #ifndef _szp_ByteToolkit_H  ----- */
 

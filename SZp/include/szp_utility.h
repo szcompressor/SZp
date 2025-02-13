@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_utility.h
+ *  @file szp_utility.h
  *  @author Sheng Di
  *  @date Feb, 2022
  *  @brief Header file for the utility.c.
@@ -7,10 +7,10 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#ifndef _hZCCL_UTILITY_H
-#define _hZCCL_UTILITY_H
+#ifndef _szp_UTILITY_H
+#define _szp_UTILITY_H
 
-#include "hZCCL.h"
+#include "szp.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,4 +34,4 @@ void sz_cost_end_msg(char *);
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_UTILITY_H  ----- */
+#endif /* ----- #ifndef _szp_UTILITY_H  ----- */

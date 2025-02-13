@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL.c
+ *  @file szp.c
  *  @author Sheng Di
  *  @date Jan, 2022
  *  @brief 
@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "hZCCL.h"
-#include "hZCCL_rw.h"
+#include "szp.h"
+#include "szp_rw.h"
 
-int versionNumber[4] = {hZCCL_VER_MAJOR,hZCCL_VER_MINOR,hZCCL_VER_BUILD,hZCCL_VER_REVISION};
+int versionNumber[4] = {szp_VER_MAJOR,szp_VER_MINOR,szp_VER_BUILD,szp_VER_REVISION};
 
 int dataEndianType = LITTLE_ENDIAN_DATA; //*endian type of the data read from disk
 int sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set automatically.

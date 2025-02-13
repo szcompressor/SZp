@@ -1,11 +1,11 @@
 /**
- *  @file hZCCL_helper.h
+ *  @file szp_helper.h
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
  *  @date Oct, 2023
  */
 
-#ifndef _hZCCL_HELPER_H
-#define _hZCCL_HELPER_H
+#ifndef _szp_HELPER_H
+#define _szp_HELPER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,4 +25,4 @@ void setBit(BitArray* bitArray, size_t index, int value);
 int getBit(BitArray* bitArray, size_t index);
 void freeBitArray(BitArray* bitArray);
 
-#endif /* ----- #ifndef _hZCCL_Float_H  ----- */
+#endif /* ----- #ifndef _szp_Float_H  ----- */

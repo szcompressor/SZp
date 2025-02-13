@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_ByteToolkit.c
+ *  @file szp_ByteToolkit.c
  *  @author Sheng Di
  *  @date Feb, 2022
  *  @brief Byte Toolkit
@@ -8,9 +8,9 @@
  */
  
 #include <stdlib.h>
-#include "hZCCL.h" 	
-#include "hZCCL_BytesToolkit.h"
-#include "hZCCL_dataCompression.h"
+#include "szp.h" 	
+#include "szp_BytesToolkit.h"
+#include "szp_dataCompression.h"
 
 inline void sz_writeBits_Fast_int8(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, unsigned char data)
 {

@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(hZCCL, 1.0, jhuan380@ucr.edu)
+AC_INIT(szp, 1.1, sdi1@anl.gov)
 AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
-AC_CONFIG_SRCDIR([SZp/src/hZCCL.c])
+AC_CONFIG_SRCDIR([SZp/src/szp.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

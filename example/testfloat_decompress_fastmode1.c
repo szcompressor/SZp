@@ -1,5 +1,5 @@
 /**
- *  @file test_decompress.c
+ *  @file testfloat_decompress_fastmode1.c
  *  @author Sheng Di
  *  @date April, 2015
  *  @brief This is an example of using Decompression interface.
@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "hZCCL.h"
+#include "szp.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 
     cost_start();
     float *data = NULL;
-    // hZCCL_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
-    hZCCL_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
+    // szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
+    szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
     cost_end();
 
     free(bytes);

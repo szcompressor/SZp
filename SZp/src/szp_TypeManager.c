@@ -1,12 +1,12 @@
 /**
- *  @file hZCCL_TypeManager.c
+ *  @file szp_TypeManager.c
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
  *  @date Oct, 2023
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "hZCCL.h"
+#include "szp.h"
 
 size_t Jiajun_save_fixed_length_bits(unsigned int *unsignintArray, size_t intArrayLength, unsigned char *result, unsigned int bit_count)
 {

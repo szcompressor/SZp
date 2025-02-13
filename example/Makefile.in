@@ -107,7 +107,7 @@ am_testfloat_compress_fastmode1_OBJECTS =  \
 	testfloat_compress_fastmode1.$(OBJEXT)
 testfloat_compress_fastmode1_OBJECTS =  \
 	$(am_testfloat_compress_fastmode1_OBJECTS)
-testfloat_compress_fastmode1_DEPENDENCIES = ../SZp/.libs/libSZp.a
+testfloat_compress_fastmode1_DEPENDENCIES = ../SZp/.libs/libszp.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -116,7 +116,7 @@ am_testfloat_decompress_fastmode1_OBJECTS =  \
 	testfloat_decompress_fastmode1.$(OBJEXT)
 testfloat_decompress_fastmode1_OBJECTS =  \
 	$(am_testfloat_decompress_fastmode1_OBJECTS)
-testfloat_decompress_fastmode1_DEPENDENCIES = ../SZp/.libs/libSZp.a
+testfloat_decompress_fastmode1_DEPENDENCIES = ../SZp/.libs/libszp.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -307,9 +307,9 @@ AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -I../SZp/include $(am__append_1)
 AM_FCFLAGS = -I../SZp/include -I../SZp
 testfloat_compress_fastmode1_SOURCES = testfloat_compress_fastmode1.c
-testfloat_compress_fastmode1_LDADD = ../SZp/.libs/libSZp.a -lm
+testfloat_compress_fastmode1_LDADD = ../SZp/.libs/libszp.a -lm
 testfloat_decompress_fastmode1_SOURCES = testfloat_decompress_fastmode1.c
-testfloat_decompress_fastmode1_LDADD = ../SZp/.libs/libSZp.a -lm
+testfloat_decompress_fastmode1_LDADD = ../SZp/.libs/libszp.a -lm
 all: all-am
 
 .SUFFIXES:

@@ -1,12 +1,12 @@
 /**
- *  @file hZCCL_helper.c
+ *  @file szp_helper.c
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
  *  @date Oct, 2023
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "hZCCL_helper.h"
+#include "szp_helper.h"
 
 
 BitArray* createBitArray(size_t size) {

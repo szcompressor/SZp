@@ -1,11 +1,11 @@
 /**
- *  @file hZCCL_TypeManager.h
+ *  @file szp_TypeManager.h
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
  *  @date Oct, 2023
  */
 
-#ifndef _hZCCL_TypeManager_H
-#define _hZCCL_TypeManager_H
+#ifndef _szp_TypeManager_H
+#define _szp_TypeManager_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,5 +57,5 @@ int getLeftMovingSteps(size_t k, unsigned char resiBitLength);
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_TypeManager_H  ----- */
+#endif /* ----- #ifndef _szp_TypeManager_H  ----- */
 

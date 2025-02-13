@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_rw.h
+ *  @file szp_rw.h
  *  @author Sheng Di
  *  @date Jan, 2022
  *  @brief Header file for the whole io interface.
@@ -7,8 +7,8 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#ifndef _hZCCL_RW_H
-#define _hZCCL_RW_H
+#ifndef _szp_RW_H
+#define _szp_RW_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -86,4 +86,4 @@ void writefloatfile_(float *data, size_t *nbEle, char *tgtFilePath, int *len);
 }
 #endif
 
-#endif /* ----- #ifndef _hZCCL_RW_H  ----- */
+#endif /* ----- #ifndef _szp_RW_H  ----- */

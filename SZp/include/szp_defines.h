@@ -1,5 +1,5 @@
 /**
- *  @file hZCCL_defines.h
+ *  @file szp_defines.h
  *  @author Sheng Di
  *  @date Jan, 2022
  *  @brief Header file for the dataCompression.c.
@@ -7,14 +7,14 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#ifndef _hZCCL_DEFINES_H
-#define _hZCCL_DEFINES_H
+#ifndef _szp_DEFINES_H
+#define _szp_DEFINES_H
 
-#define hZCCL_VERNUM 0x0200
-#define hZCCL_VER_MAJOR 1
-#define hZCCL_VER_MINOR 0
-#define hZCCL_VER_BUILD 0
-#define hZCCL_VER_REVISION 0
+#define szp_VERNUM 0x0200
+#define szp_VER_MAJOR 1
+#define szp_VER_MINOR 0
+#define szp_VER_BUILD 0
+#define szp_VER_REVISION 0
 
 #define ABS 0
 #define REL 1
@@ -49,10 +49,10 @@
 #define BIG_ENDIAN_SYSTEM 1
 
 
-#define hZCCL_NO_BLOCK_FAST_CMPR 1
-#define hZCCL_WITH_BLOCK_FAST_CMPR 2
-#define hZCCL_RANDOMACCESS_FAST_CMPR 3
-#define hZCCL_OPENMP_FAST_CMPR 4
+#define szp_NO_BLOCK_FAST_CMPR 1
+#define szp_WITH_BLOCK_FAST_CMPR 2
+#define szp_RANDOMACCESS_FAST_CMPR 3
+#define szp_OPENMP_FAST_CMPR 4
 
 //SUCCESS returning status
 #define SZ_SCES 0  //successful
@@ -63,4 +63,4 @@
 #define SZ_MERR -5 //sz_mode error
 #define SZ_BERR -6 //bound-mode error (should be only ABS, REL, ABS_AND_REL, ABS_OR_REL, or PW_REL)
 
-#endif /* _hZCCL_DEFINES_H */
+#endif /* _szp_DEFINES_H */
