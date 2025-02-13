@@ -3,7 +3,7 @@
 * Major author and developer: Jiajun Huang, Sheng Di
 * Supervisor: Sheng Di
 
-This is the official repository of SZp, an ultra-fast error-bounded lossy compressor: CPU version (supporting openMP). 
+This is the official repository of SZp, an extreme-fast error-bounded lossy compressor: CPU version (supporting openMP). 
 The design and optimizations of SZp are published under the name fZ-light in SC '24.
 
 ## Installation
@@ -24,3 +24,16 @@ make -j
 make install
 
 ```
+
+## Citation
+
+If you find SZp useful in your research or applications, we kindly invite you to cite our paper. Your support helps advance the field and acknowledges the contributions of our work. Thank you!
+- **[SC '24]** hZCCL: Accelerating Collective Communication with Co-Designed Homomorphic Compression
+    ```bibtex
+    @inproceedings{huang2024hZCCL,
+        title={hZCCL: Accelerating Collective Communication with Co-Designed Homomorphic Compression},
+        author = {Huang, Jiajun and Di, Sheng and Yu, Xiaodong and Zhai, Yujia and Liu, Jinyang and Jian, Zizhe and Liang, Xin and Zhao, Kai and Lu, Xiaoyi and Chen, Zizhong and Cappello, Franck and Guo, Yanfei and Thakur, Rajeev},
+        booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage, and Analysis},
+        year = {2024}
+    }
+    ```
