@@ -14,7 +14,6 @@ cd SZp
 mkdir install
 
 # Run the configuration script:
-./autogen.sh
 ./configure --prefix=$(pwd)/install --enable-openmp
 
 # Compile the SZp using multiple threads:
