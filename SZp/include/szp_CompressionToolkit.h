@@ -1,16 +1,74 @@
 /**
- *  @file szp_ByteToolkit.c
+ *  @file szp_CompressionToolkit.h
  *  @author Sheng Di
- *  @date Feb, 2022
- *  @brief Byte Toolkit
- *  (C) 2016 by Mathematics and Computer Science (MCS), Argonne National Laboratory.
+ *  @date Feb, 2025
+ *  @brief Header file for the ByteToolkit.c.
+ *  (C) 2025 by Mathematics and Computer Science (MCS), Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
- 
+
+#ifndef _szp_CompressionToolkit_H
+#define _szp_CompressionToolkit_H
+
+template <typename T>
+void computeMinMax(const T* data, size_t len, T& min, T& max) {
+    min = data[0];
+    max = data[0];
+    for (size_t i = 1; i < len; ++i) {
+        if (data[i] < min) min = data[i];
+        else if (data[i] > max) max = data[i];
+    }
+}
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "szp_defines.h"
+#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include "szp.h" 	
-#include "szp_BytesToolkit.h"
-#include "szp_dataCompression.h"
+#include <stdbool.h>
+#include <unistd.h>
+#include <cstdint>
+        
+inline void symTransform_8bytes(unsigned char data[8])
+{
+	unsigned char tmp = data[0];
+	data[0] = data[7];
+	data[7] = tmp;
+
+	tmp = data[1];
+	data[1] = data[6];
+	data[6] = tmp;
+	
+	tmp = data[2];
+	data[2] = data[5];
+	data[5] = tmp;
+	
+	tmp = data[3];
+	data[3] = data[4];
+	data[4] = tmp;
+}
+
+inline void symTransform_2bytes(unsigned char data[2])
+{
+	unsigned char tmp = data[0];
+	data[0] = data[1];
+	data[1] = tmp;
+}
+
+inline void symTransform_4bytes(unsigned char data[4])
+{
+	unsigned char tmp = data[0];
+	data[0] = data[3];
+	data[3] = tmp;
+
+	tmp = data[1];
+	data[1] = data[2];
+	data[2] = tmp;
+}
 
 inline void sz_writeBits_Fast_int8(unsigned char* buffer,uint64_t *bitPosPtr, int numBits, unsigned char data)
 {
@@ -557,247 +615,6 @@ inline int getRightMovingCode(int kMod8, int resiBitLength)
 	}
 }
 
-short* convertByteDataToShortArray(unsigned char* bytes, size_t byteLength)
-{
-	lint16 ls;
-	size_t i, stateLength = byteLength/2;
-	short* states = (short*)malloc(stateLength*sizeof(short));
-	if(sysEndianType==dataEndianType)
-	{	
-		for(i=0;i<stateLength;i++)
-		{
-			ls.byte[0] = bytes[i*2];
-			ls.byte[1] = bytes[i*2+1];
-			states[i] = ls.svalue;
-		}
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.byte[0] = bytes[i*2+1];
-			ls.byte[1] = bytes[i*2];
-			states[i] = ls.svalue;
-		}		
-	}
-	return states;
-} 
-
-unsigned short* convertByteDataToUShortArray(unsigned char* bytes, size_t byteLength)
-{
-	lint16 ls;
-	size_t i, stateLength = byteLength/2;
-	unsigned short* states = (unsigned short*)malloc(stateLength*sizeof(unsigned short));
-	if(sysEndianType==dataEndianType)
-	{	
-		for(i=0;i<stateLength;i++)
-		{
-			ls.byte[0] = bytes[i*2];
-			ls.byte[1] = bytes[i*2+1];
-			states[i] = ls.usvalue;
-		}
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.byte[0] = bytes[i*2+1];
-			ls.byte[1] = bytes[i*2];
-			states[i] = ls.usvalue;
-		}		
-	}
-	return states;
-} 
-
-void convertShortArrayToBytes(short* states, size_t stateLength, unsigned char* bytes)
-{
-	lint16 ls;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.svalue = states[i];
-			bytes[i*2] = ls.byte[0];
-			bytes[i*2+1] = ls.byte[1];
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.svalue = states[i];
-			bytes[i*2] = ls.byte[1];
-			bytes[i*2+1] = ls.byte[0];
-		}			
-	}
-}
-
-void convertUShortArrayToBytes(unsigned short* states, size_t stateLength, unsigned char* bytes)
-{
-	lint16 ls;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.usvalue = states[i];
-			bytes[i*2] = ls.byte[0];
-			bytes[i*2+1] = ls.byte[1];
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			ls.usvalue = states[i];
-			bytes[i*2] = ls.byte[1];
-			bytes[i*2+1] = ls.byte[0];
-		}			
-	}
-}
-
-void convertIntArrayToBytes(int* states, size_t stateLength, unsigned char* bytes)
-{
-	lint32 ls;
-	size_t index = 0;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 2; //==i*4
-			ls.ivalue = states[i];
-			bytes[index] = ls.byte[0];
-			bytes[index+1] = ls.byte[1];
-			bytes[index+2] = ls.byte[2];
-			bytes[index+3] = ls.byte[3];
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 2; //==i*4
-			ls.ivalue = states[i];
-			bytes[index] = ls.byte[3];
-			bytes[index+1] = ls.byte[2];
-			bytes[index+2] = ls.byte[1];
-			bytes[index+3] = ls.byte[0];
-		}			
-	}
-}
-
-void convertUIntArrayToBytes(unsigned int* states, size_t stateLength, unsigned char* bytes)
-{
-	lint32 ls;
-	size_t index = 0;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 2; //==i*4
-			ls.uivalue = states[i];
-			bytes[index] = ls.byte[0];
-			bytes[index+1] = ls.byte[1];
-			bytes[index+2] = ls.byte[2];
-			bytes[index+3] = ls.byte[3];
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 2; //==i*4
-			ls.uivalue = states[i];
-			bytes[index] = ls.byte[3];
-			bytes[index+1] = ls.byte[2];
-			bytes[index+2] = ls.byte[1];
-			bytes[index+3] = ls.byte[0];
-		}			
-	}
-}
-
-void convertLongArrayToBytes(int64_t* states, size_t stateLength, unsigned char* bytes)
-{
-	lint64 ls;
-	size_t index = 0;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 3; //==i*8
-			ls.lvalue = states[i];
-			bytes[index] = ls.byte[0];
-			bytes[index+1] = ls.byte[1];
-			bytes[index+2] = ls.byte[2];
-			bytes[index+3] = ls.byte[3];
-			bytes[index+4] = ls.byte[4];
-			bytes[index+5] = ls.byte[5];
-			bytes[index+6] = ls.byte[6];
-			bytes[index+7] = ls.byte[7];	
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 3; //==i*8
-			ls.lvalue = states[i];
-			bytes[index] = ls.byte[7];
-			bytes[index+1] = ls.byte[6];
-			bytes[index+2] = ls.byte[5];
-			bytes[index+3] = ls.byte[4];
-			bytes[index+4] = ls.byte[3];
-			bytes[index+5] = ls.byte[2];
-			bytes[index+6] = ls.byte[1];
-			bytes[index+7] = ls.byte[0];	
-		}			
-	}
-}
-
-void convertULongArrayToBytes(uint64_t* states, size_t stateLength, unsigned char* bytes)
-{
-	lint64 ls;
-	size_t index = 0;
-	size_t i;
-	if(sysEndianType==dataEndianType)
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 3; //==i*8
-			ls.ulvalue = states[i];
-			bytes[index] = ls.byte[0];
-			bytes[index+1] = ls.byte[1];
-			bytes[index+2] = ls.byte[2];
-			bytes[index+3] = ls.byte[3];
-			bytes[index+4] = ls.byte[4];
-			bytes[index+5] = ls.byte[5];
-			bytes[index+6] = ls.byte[6];
-			bytes[index+7] = ls.byte[7];			
-		}		
-	}
-	else
-	{
-		for(i=0;i<stateLength;i++)
-		{
-			index = i << 3; //==i*8
-			ls.ulvalue = states[i];
-			bytes[index] = ls.byte[7];
-			bytes[index+1] = ls.byte[6];
-			bytes[index+2] = ls.byte[5];
-			bytes[index+3] = ls.byte[4];
-			bytes[index+4] = ls.byte[3];
-			bytes[index+5] = ls.byte[2];
-			bytes[index+6] = ls.byte[1];
-			bytes[index+7] = ls.byte[0];	
-		}			
-	}
-}
-
-
 inline size_t bytesToSize(unsigned char* bytes)
 {
 	size_t result = bytesToLong_bigEndian(bytes);//8	
@@ -808,4 +625,144 @@ inline void sizeToBytes(unsigned char* outBytes, size_t size)
 {
 		longToBytes_bigEndian(outBytes, size);//8
 }
+
+short* convertByteDataToShortArray(unsigned char* bytes, size_t byteLength);
+unsigned short* convertByteDataToUShortArray(unsigned char* bytes, size_t byteLength);
+void convertShortArrayToBytes(short* states, size_t stateLength, unsigned char* bytes);
+void convertUShortArrayToBytes(unsigned short* states, size_t stateLength, unsigned char* bytes);
+void convertIntArrayToBytes(int* states, size_t stateLength, unsigned char* bytes);
+void convertUIntArrayToBytes(unsigned int* states, size_t stateLength, unsigned char* bytes);
+void convertLongArrayToBytes(int64_t* states, size_t stateLength, unsigned char* bytes);
+void convertULongArrayToBytes(uint64_t* states, size_t stateLength, unsigned char* bytes);
+int computeByteSizePerIntValue(long valueRangeSize);
+long computeRangeSize_int(void* oriData, int dataType, size_t size, int64_t* valueRangeSize);
+double computeRangeSize_double(double* oriData, size_t size, double* valueRangeSize, double* medianValue);
+float computeRangeSize_float(float* oriData, size_t size, float* valueRangeSize, float* medianValue);
+
+inline double min_d(double a, double b)
+{
+	if(a<b)
+		return a;
+	else
+		return b;
+}
+
+inline double max_d(double a, double b)
+{
+	if(a>b)
+		return a;
+	else
+		return b;
+}
+
+inline float min_f(float a, float b)
+{
+	if(a<b)
+		return a;
+	else
+		return b;
+}
+
+inline float max_f(float a, float b)
+{
+	if(a>b)
+		return a;
+	else
+		return b;
+}
+
+double getRealPrecision_double(double valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
+double getRealPrecision_float(float valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
+double getRealPrecision_int(long valueRangeSize, int errBoundMode, double absErrBound, double relBoundRatio, int *status);
+
+inline void compressInt8Value(int8_t tgtValue, int8_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint8_t data = tgtValue - minValue;
+	memcpy(bytes, &data, byteSize); //byteSize==1
+}
+
+inline void compressInt16Value(int16_t tgtValue, int16_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint16_t data = tgtValue - minValue;
+	unsigned char tmpBytes[2];
+	int16ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 2 - byteSize, byteSize);
+}
+
+inline void compressInt32Value(int32_t tgtValue, int32_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint32_t data = tgtValue - minValue;
+	unsigned char tmpBytes[4];
+	int32ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 4 - byteSize, byteSize);
+}
+
+inline void compressInt64Value(int64_t tgtValue, int64_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint64_t data = tgtValue - minValue;
+	unsigned char tmpBytes[8];
+	int64ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 8 - byteSize, byteSize);
+}
+
+inline void compressUInt8Value(uint8_t tgtValue, uint8_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint8_t data = tgtValue - minValue;
+	memcpy(bytes, &data, byteSize); //byteSize==1
+}
+
+inline void compressUInt16Value(uint16_t tgtValue, uint16_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint16_t data = tgtValue - minValue;
+	unsigned char tmpBytes[2];
+	int16ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 2 - byteSize, byteSize);
+}
+
+inline void compressUInt32Value(uint32_t tgtValue, uint32_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint32_t data = tgtValue - minValue;
+	unsigned char tmpBytes[4];
+	int32ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 4 - byteSize, byteSize);
+}
+
+inline void compressUInt64Value(uint64_t tgtValue, uint64_t minValue, int byteSize, unsigned char* bytes)
+{
+	uint64_t data = tgtValue - minValue;
+	unsigned char tmpBytes[8];
+	int64ToBytes_bigEndian(tmpBytes, data);
+	memcpy(bytes, tmpBytes + 8 - byteSize, byteSize);
+}
+
+inline int compIdenticalLeadingBytesCount_double(unsigned char* preBytes, unsigned char* curBytes)
+{
+	int i, n = 0;
+	for(i=0;i<8;i++)
+		if(preBytes[i]==curBytes[i])
+			n++;
+		else
+			break;
+	if(n>3) n = 3;
+	return n;
+}
+
+
+inline int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigned char* curBytes)
+{
+	int i, n = 0;
+	for(i=0;i<4;i++)
+		if(preBytes[i]==curBytes[i])
+			n++;
+		else
+			break;
+	if(n>3) n = 3;
+	return n;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* ----- #ifndef _szp_CompressionToolkit_H  ----- */
 

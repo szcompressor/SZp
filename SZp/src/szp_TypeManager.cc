@@ -146,7 +146,7 @@ size_t Jiajun_convertUInt2Byte_fast_1b_args(unsigned int *intArray, size_t intAr
 size_t Jiajun_convertUInt2Byte_fast_2b_args(unsigned int *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
 	register unsigned char tmp = 0;
-	size_t i, j = 0, byteLength = 0;
+	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
 	else
@@ -186,7 +186,7 @@ size_t Jiajun_convertUInt2Byte_fast_2b_args(unsigned int *timeStepType, size_t t
 		}
 		tmp = 0;
 		int mod4 = timeStepTypeLength % 4;
-		for (j = 0; j < mod4; j++)
+		for (int j = 0; j < mod4; j++)
 		{
 			unsigned char type = timeStepType[n++];
 			tmp = tmp | type << (6 - (j << 1));
@@ -999,7 +999,7 @@ void convertByteArray2IntArray_fast_1b(size_t intArrayLength, unsigned char *byt
 inline size_t convertIntArray2ByteArray_fast_2b_args(unsigned char *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
 	register unsigned char tmp = 0;
-	size_t i, j = 0, byteLength = 0;
+	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
 	else
@@ -1039,7 +1039,7 @@ inline size_t convertIntArray2ByteArray_fast_2b_args(unsigned char *timeStepType
 		}
 		tmp = 0;
 		int mod4 = timeStepTypeLength % 4;
-		for (j = 0; j < mod4; j++)
+		for (int j = 0; j < mod4; j++)
 		{
 			unsigned char type = timeStepType[n++];
 			tmp = tmp | type << (6 - (j << 1));

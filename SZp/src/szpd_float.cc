@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <math.h>
 #include "szp_TypeManager.h"
-#include "szp_BytesToolkit.h"
+#include "szp_CompressionToolkit.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -279,7 +279,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     unsigned char *rcp;
     unsigned int nbThreads = 0;
     
-    int threadblocksize = 0;
+    size_t threadblocksize = 0;
     
     int block_size = blockSize;
     int num_full_block_in_tb = 0;
@@ -293,11 +293,11 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     int tid = 0;
-    int lo = tid * threadblocksize;
-    int hi = (tid + 1) * threadblocksize;
+    size_t lo = tid * threadblocksize;
+    size_t hi = (tid + 1) * threadblocksize;
     float *newData_perthread = newData + lo;
     size_t i = 0;
-    size_t j = 0;
+    int j = 0;
 
     int prior = 0;
     int current = 0;
@@ -418,7 +418,7 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     unsigned char *rcp;
     unsigned int nbThreads = 0;
     
-    int threadblocksize = 0;
+    size_t threadblocksize = 0;
     
     int block_size = blockSize;
     int num_full_block_in_tb = 0;
@@ -432,11 +432,11 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     int tid = 0;
-    int lo = tid * threadblocksize;
-    int hi = (tid + 1) * threadblocksize;
+    size_t lo = tid * threadblocksize;
+    size_t hi = (tid + 1) * threadblocksize;
     float *newData_perthread = newData + lo;
     size_t i = 0;
-    size_t j = 0;
+    int j = 0;
 
     int prior = 0;
     int current = 0;

@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <math.h>
 #include "szp_TypeManager.h"
-#include "szp_BytesToolkit.h"
+#include "szp_CompressionToolkit.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -979,19 +979,19 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     size_t i = 0;
-    size_t j = 0;
+    unsigned int j = 0;
     //size_t k = 0;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
     int tid = 0;
-    int lo = tid * threadblocksize;
-    int hi = (tid + 1) * threadblocksize;
+    size_t lo = tid * threadblocksize;
+    size_t hi = (tid + 1) * threadblocksize;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
-    unsigned int max = 0;
+    int max = 0;
     unsigned int bit_count = 0;
     unsigned char *block_pointer = outputBytes_perthread;
     prior = (op[lo]) * inver_bound;
@@ -1168,7 +1168,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
     total_memaccess += sizeof(size_t);
 
     double inver_bound = 0;
-    unsigned int threadblocksize = 0;
+    size_t threadblocksize = 0;
     //unsigned int remainder = 0;
     unsigned int block_size = blockSize;
     unsigned int num_full_block_in_tb = 0;
@@ -1189,18 +1189,18 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     size_t i = 0;
-    size_t j = 0;
+    unsigned int j = 0;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
     int tid = 0;
-    int lo = tid * threadblocksize;
-    int hi = (tid + 1) * threadblocksize;
+    size_t lo = tid * threadblocksize;
+    size_t hi = (tid + 1) * threadblocksize;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
-    unsigned int max = 0;
+    int max = 0;
     unsigned int bit_count = 0;
     unsigned char *block_pointer = outputBytes_perthread;
     prior = (op[lo]) * inver_bound;

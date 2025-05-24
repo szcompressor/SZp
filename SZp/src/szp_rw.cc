@@ -15,8 +15,7 @@
 
 #include "szp_rw.h"
 #include "szp.h"
-#include "szp_BytesToolkit.h"
-#include "szp_dataCompression.h"
+#include "szp_CompressionToolkit.h"
 
 int checkFileExistance(char* filePath)
 {
@@ -987,7 +986,7 @@ unsigned short* readShortData(char *srcFilePath, size_t *dataLength, int *status
 
 void writeStrings(int nbStr, char *str[], char *tgtFilePath, int *status)
 {
-	size_t i = 0;
+	int i = 0;
 	char s[256];
 	FILE *pFile = fopen(tgtFilePath, "wb");
 	if (pFile == NULL)

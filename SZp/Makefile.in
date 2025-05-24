@@ -136,19 +136,18 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libszp_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libszp_la_OBJECTS = src/libszp_la-szp.lo src/libszp_la-szp_rw.lo \
-	src/libszp_la-szp_BytesToolkit.lo \
 	src/libszp_la-szp_TypeManager.lo \
-	src/libszp_la-szp_dataCompression.lo \
-	src/libszp_la-szp_utility.lo src/libszp_la-szp_float.lo \
-	src/libszp_la-szpd_float.lo src/libszp_la-szp_helper.lo
+	src/libszp_la-szp_CompressionToolkit.lo \
+	src/libszp_la-szp_float.lo src/libszp_la-szpd_float.lo \
+	src/libszp_la-szp_helper.lo
 libszp_la_OBJECTS = $(am_libszp_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libszp_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libszp_la_CFLAGS) \
-	$(CFLAGS) $(libszp_la_LDFLAGS) $(LDFLAGS) -o $@
+libszp_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(libszp_la_CXXFLAGS) \
+	$(CXXFLAGS) $(libszp_la_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -165,33 +164,31 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/libszp_la-szp.Plo \
-	src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Plo \
+	src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Plo \
 	src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo \
-	src/$(DEPDIR)/libszp_la-szp_dataCompression.Plo \
 	src/$(DEPDIR)/libszp_la-szp_float.Plo \
 	src/$(DEPDIR)/libszp_la-szp_helper.Plo \
 	src/$(DEPDIR)/libszp_la-szp_rw.Plo \
-	src/$(DEPDIR)/libszp_la-szp_utility.Plo \
 	src/$(DEPDIR)/libszp_la-szpd_float.Plo
 am__mv = mv -f
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
 SOURCES = $(libszp_la_SOURCES)
 DIST_SOURCES = $(libszp_la_SOURCES)
 am__can_run_installinfo = \
@@ -232,8 +229,11 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -294,6 +294,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 ac_ct_FC = @ac_ct_FC@
 am__include = @am__include@
@@ -333,6 +334,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -342,16 +344,15 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-include_HEADERS = include/szp.h include/szp_rw.h include/szp_defines.h include/szp_BytesToolkit.h include/szp_TypeManager.h include/szp_dataCompression.h include/szp_utility.h include/szp_float.h include/szpd_float.h include/szp_helper.h
+include_HEADERS = include/szp.h include/szp_rw.h include/szp_defines.h include/szp_TypeManager.h include/szp_CompressionToolkit.h include/szp_float.h include/szpd_float.h include/szp_helper.h
 lib_LTLIBRARIES = libszp.la
-libszp_la_CFLAGS = -I./include $(am__append_1)
-libszp_la_LDFLAGS = -version-info  1:0:0
-libszp_la_SOURCES = src/szp.c src/szp_rw.c src/szp_BytesToolkit.c src/szp_TypeManager.c src/szp_dataCompression.c src/szp_utility.c src/szp_float.c src/szpd_float.c src/szp_helper.c
-libSZ_la_LINK = $(AM_V_CC)$(LIBTOOL) --tag=CC --mode=link $(CCLD) $(libszp_la_CFLAGS) -O3 $(libszp_la_LDFLAGS) -o $(lib_LTLIBRARIES)
+libszp_la_CXXFLAGS = -I./include $(am__append_1)
+libszp_la_LDFLAGS = -version-info  1:2:0
+libszp_la_SOURCES = src/szp.cc src/szp_rw.cc src/szp_TypeManager.cc src/szp_CompressionToolkit.cc src/szp_float.cc src/szpd_float.cc src/szp_helper.cc
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .cc .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -426,13 +427,9 @@ src/libszp_la-szp.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libszp_la-szp_rw.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libszp_la-szp_BytesToolkit.lo: src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
 src/libszp_la-szp_TypeManager.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/libszp_la-szp_dataCompression.lo: src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-src/libszp_la-szp_utility.lo: src/$(am__dirstamp) \
+src/libszp_la-szp_CompressionToolkit.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libszp_la-szp_float.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
@@ -442,7 +439,7 @@ src/libszp_la-szp_helper.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
 libszp.la: $(libszp_la_OBJECTS) $(libszp_la_DEPENDENCIES) $(EXTRA_libszp_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libszp_la_LINK) -rpath $(libdir) $(libszp_la_OBJECTS) $(libszp_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(libszp_la_LINK) -rpath $(libdir) $(libszp_la_OBJECTS) $(libszp_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -453,13 +450,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_dataCompression.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_float.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_helper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_rw.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szp_utility.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libszp_la-szpd_float.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -468,92 +463,78 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+.cc.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+.cc.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-.c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
-@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+.cc.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-src/libszp_la-szp.lo: src/szp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp.Tpo -c -o src/libszp_la-szp.lo `test -f 'src/szp.c' || echo '$(srcdir)/'`src/szp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp.Tpo src/$(DEPDIR)/libszp_la-szp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp.c' object='src/libszp_la-szp.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp.lo `test -f 'src/szp.c' || echo '$(srcdir)/'`src/szp.c
+src/libszp_la-szp.lo: src/szp.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp.Tpo -c -o src/libszp_la-szp.lo `test -f 'src/szp.cc' || echo '$(srcdir)/'`src/szp.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp.Tpo src/$(DEPDIR)/libszp_la-szp.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp.cc' object='src/libszp_la-szp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp.lo `test -f 'src/szp.cc' || echo '$(srcdir)/'`src/szp.cc
 
-src/libszp_la-szp_rw.lo: src/szp_rw.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_rw.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_rw.Tpo -c -o src/libszp_la-szp_rw.lo `test -f 'src/szp_rw.c' || echo '$(srcdir)/'`src/szp_rw.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_rw.Tpo src/$(DEPDIR)/libszp_la-szp_rw.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_rw.c' object='src/libszp_la-szp_rw.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_rw.lo `test -f 'src/szp_rw.c' || echo '$(srcdir)/'`src/szp_rw.c
+src/libszp_la-szp_rw.lo: src/szp_rw.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_rw.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_rw.Tpo -c -o src/libszp_la-szp_rw.lo `test -f 'src/szp_rw.cc' || echo '$(srcdir)/'`src/szp_rw.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_rw.Tpo src/$(DEPDIR)/libszp_la-szp_rw.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_rw.cc' object='src/libszp_la-szp_rw.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_rw.lo `test -f 'src/szp_rw.cc' || echo '$(srcdir)/'`src/szp_rw.cc
 
-src/libszp_la-szp_BytesToolkit.lo: src/szp_BytesToolkit.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_BytesToolkit.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Tpo -c -o src/libszp_la-szp_BytesToolkit.lo `test -f 'src/szp_BytesToolkit.c' || echo '$(srcdir)/'`src/szp_BytesToolkit.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Tpo src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_BytesToolkit.c' object='src/libszp_la-szp_BytesToolkit.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_BytesToolkit.lo `test -f 'src/szp_BytesToolkit.c' || echo '$(srcdir)/'`src/szp_BytesToolkit.c
+src/libszp_la-szp_TypeManager.lo: src/szp_TypeManager.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_TypeManager.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_TypeManager.Tpo -c -o src/libszp_la-szp_TypeManager.lo `test -f 'src/szp_TypeManager.cc' || echo '$(srcdir)/'`src/szp_TypeManager.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_TypeManager.Tpo src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_TypeManager.cc' object='src/libszp_la-szp_TypeManager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_TypeManager.lo `test -f 'src/szp_TypeManager.cc' || echo '$(srcdir)/'`src/szp_TypeManager.cc
 
-src/libszp_la-szp_TypeManager.lo: src/szp_TypeManager.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_TypeManager.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_TypeManager.Tpo -c -o src/libszp_la-szp_TypeManager.lo `test -f 'src/szp_TypeManager.c' || echo '$(srcdir)/'`src/szp_TypeManager.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_TypeManager.Tpo src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_TypeManager.c' object='src/libszp_la-szp_TypeManager.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_TypeManager.lo `test -f 'src/szp_TypeManager.c' || echo '$(srcdir)/'`src/szp_TypeManager.c
+src/libszp_la-szp_CompressionToolkit.lo: src/szp_CompressionToolkit.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_CompressionToolkit.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Tpo -c -o src/libszp_la-szp_CompressionToolkit.lo `test -f 'src/szp_CompressionToolkit.cc' || echo '$(srcdir)/'`src/szp_CompressionToolkit.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Tpo src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_CompressionToolkit.cc' object='src/libszp_la-szp_CompressionToolkit.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_CompressionToolkit.lo `test -f 'src/szp_CompressionToolkit.cc' || echo '$(srcdir)/'`src/szp_CompressionToolkit.cc
 
-src/libszp_la-szp_dataCompression.lo: src/szp_dataCompression.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_dataCompression.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_dataCompression.Tpo -c -o src/libszp_la-szp_dataCompression.lo `test -f 'src/szp_dataCompression.c' || echo '$(srcdir)/'`src/szp_dataCompression.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_dataCompression.Tpo src/$(DEPDIR)/libszp_la-szp_dataCompression.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_dataCompression.c' object='src/libszp_la-szp_dataCompression.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_dataCompression.lo `test -f 'src/szp_dataCompression.c' || echo '$(srcdir)/'`src/szp_dataCompression.c
+src/libszp_la-szp_float.lo: src/szp_float.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_float.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_float.Tpo -c -o src/libszp_la-szp_float.lo `test -f 'src/szp_float.cc' || echo '$(srcdir)/'`src/szp_float.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_float.Tpo src/$(DEPDIR)/libszp_la-szp_float.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_float.cc' object='src/libszp_la-szp_float.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_float.lo `test -f 'src/szp_float.cc' || echo '$(srcdir)/'`src/szp_float.cc
 
-src/libszp_la-szp_utility.lo: src/szp_utility.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_utility.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_utility.Tpo -c -o src/libszp_la-szp_utility.lo `test -f 'src/szp_utility.c' || echo '$(srcdir)/'`src/szp_utility.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_utility.Tpo src/$(DEPDIR)/libszp_la-szp_utility.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_utility.c' object='src/libszp_la-szp_utility.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_utility.lo `test -f 'src/szp_utility.c' || echo '$(srcdir)/'`src/szp_utility.c
+src/libszp_la-szpd_float.lo: src/szpd_float.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szpd_float.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szpd_float.Tpo -c -o src/libszp_la-szpd_float.lo `test -f 'src/szpd_float.cc' || echo '$(srcdir)/'`src/szpd_float.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szpd_float.Tpo src/$(DEPDIR)/libszp_la-szpd_float.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szpd_float.cc' object='src/libszp_la-szpd_float.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szpd_float.lo `test -f 'src/szpd_float.cc' || echo '$(srcdir)/'`src/szpd_float.cc
 
-src/libszp_la-szp_float.lo: src/szp_float.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_float.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_float.Tpo -c -o src/libszp_la-szp_float.lo `test -f 'src/szp_float.c' || echo '$(srcdir)/'`src/szp_float.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_float.Tpo src/$(DEPDIR)/libszp_la-szp_float.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_float.c' object='src/libszp_la-szp_float.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_float.lo `test -f 'src/szp_float.c' || echo '$(srcdir)/'`src/szp_float.c
-
-src/libszp_la-szpd_float.lo: src/szpd_float.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szpd_float.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szpd_float.Tpo -c -o src/libszp_la-szpd_float.lo `test -f 'src/szpd_float.c' || echo '$(srcdir)/'`src/szpd_float.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szpd_float.Tpo src/$(DEPDIR)/libszp_la-szpd_float.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szpd_float.c' object='src/libszp_la-szpd_float.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szpd_float.lo `test -f 'src/szpd_float.c' || echo '$(srcdir)/'`src/szpd_float.c
-
-src/libszp_la-szp_helper.lo: src/szp_helper.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -MT src/libszp_la-szp_helper.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_helper.Tpo -c -o src/libszp_la-szp_helper.lo `test -f 'src/szp_helper.c' || echo '$(srcdir)/'`src/szp_helper.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_helper.Tpo src/$(DEPDIR)/libszp_la-szp_helper.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/szp_helper.c' object='src/libszp_la-szp_helper.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CFLAGS) $(CFLAGS) -c -o src/libszp_la-szp_helper.lo `test -f 'src/szp_helper.c' || echo '$(srcdir)/'`src/szp_helper.c
+src/libszp_la-szp_helper.lo: src/szp_helper.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -MT src/libszp_la-szp_helper.lo -MD -MP -MF src/$(DEPDIR)/libszp_la-szp_helper.Tpo -c -o src/libszp_la-szp_helper.lo `test -f 'src/szp_helper.cc' || echo '$(srcdir)/'`src/szp_helper.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libszp_la-szp_helper.Tpo src/$(DEPDIR)/libszp_la-szp_helper.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/szp_helper.cc' object='src/libszp_la-szp_helper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libszp_la_CXXFLAGS) $(CXXFLAGS) -c -o src/libszp_la-szp_helper.lo `test -f 'src/szp_helper.cc' || echo '$(srcdir)/'`src/szp_helper.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -714,13 +695,11 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-am
 		-rm -f src/$(DEPDIR)/libszp_la-szp.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_dataCompression.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_float.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_helper.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_rw.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_utility.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_float.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -768,13 +747,11 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f src/$(DEPDIR)/libszp_la-szp.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_BytesToolkit.Plo
+	-rm -f src/$(DEPDIR)/libszp_la-szp_CompressionToolkit.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_TypeManager.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_dataCompression.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_float.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_helper.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szp_rw.Plo
-	-rm -f src/$(DEPDIR)/libszp_la-szp_utility.Plo
 	-rm -f src/$(DEPDIR)/libszp_la-szpd_float.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

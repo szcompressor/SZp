@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "szp_CompressionToolkit.h"
 
 #ifdef _WIN32
 #define PATH_SEPARATOR ';'
