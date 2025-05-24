@@ -20,6 +20,8 @@ int versionNumber[4] = {szp_VER_MAJOR,szp_VER_MINOR,szp_VER_BUILD,szp_VER_REVISI
 int dataEndianType = LITTLE_ENDIAN_DATA; //*endian type of the data read from disk
 int sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set automatically.
 
+using namespace szp;
+
 unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
                                       float relBoundRatio, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
 {

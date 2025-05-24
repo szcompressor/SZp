@@ -18,6 +18,8 @@
 #include "omp.h"
 #endif
 
+using namespace szp;
+
 void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP

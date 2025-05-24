@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     size_t byteLength;
     int status;
-    unsigned char *bytes = readByteData(zipFilePath, &byteLength, &status);
+    unsigned char *bytes = szp_readByteData(zipFilePath, &byteLength, &status);
     if (status != SZ_SCES)
     {
         printf("Error: %s cannot be read!\n", zipFilePath);
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     free(bytes);
     printf("timecost=%f\n", totalCost);
-    writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
+    szp_writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
     if (status != SZ_SCES)
     {
         printf("Error: %s cannot be written!\n", outputFilePath);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     char oriFilePath[645];
     strcpy(oriFilePath, zipFilePath);
     oriFilePath[strlen(zipFilePath) - 4] = '\0';
-    float *ori_data = readFloatData(oriFilePath, &totalNbEle, &status);
+    float *ori_data = szp_readFloatData(oriFilePath, &totalNbEle, &status);
     if (status != SZ_SCES)
     {
         printf("Error: %s cannot be read!\n", oriFilePath);

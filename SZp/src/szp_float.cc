@@ -19,6 +19,8 @@
 #include "omp.h"
 #endif
 
+using namespace szp;
+
 unsigned char *
 szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
                                              size_t nbEle, int blockSize)

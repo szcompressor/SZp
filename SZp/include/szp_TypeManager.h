@@ -7,12 +7,10 @@
 #ifndef _szp_TypeManager_H
 #define _szp_TypeManager_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
+
+namespace szp{
 
 size_t Jiajun_save_fixed_length_bits(unsigned int *unsignintArray, size_t intArrayLength, unsigned char *result, unsigned int bit_count);
 size_t Jiajun_convertUInt2Byte_fast_1b_args(unsigned int *intArray, size_t intArrayLength, unsigned char *result);
@@ -53,9 +51,7 @@ size_t convertIntArray2ByteArray_fast_7b(unsigned char* timeStepType, size_t tim
 void convertByteArray2IntArray_fast_7b(size_t stepLength, unsigned char* byteArray, size_t byteArrayLength, unsigned char **intArray);
 int getLeftMovingSteps(size_t k, unsigned char resiBitLength);
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* ----- #ifndef _szp_TypeManager_H  ----- */
 

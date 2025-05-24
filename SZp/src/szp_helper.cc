@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include "szp_helper.h"
 
-
+namespace szp{
+	
 BitArray* createBitArray(size_t size) {
     BitArray* bitArray = (BitArray*)malloc(sizeof(BitArray));
     size_t numBytes = (size + 7) / 8; // Round up to nearest byte
@@ -44,4 +45,6 @@ int getBit(BitArray* bitArray, size_t index) {
 void freeBitArray(BitArray* bitArray) {
     free(bitArray->array);
     free(bitArray);
+}
+
 }

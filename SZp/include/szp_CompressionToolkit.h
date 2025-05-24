@@ -20,11 +20,6 @@ void computeMinMax(const T* data, size_t len, T& min, T& max) {
     }
 }
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "szp_defines.h"
 #include <stdio.h>
 #include <string.h>
@@ -32,6 +27,8 @@ extern "C" {
 #include <stdbool.h>
 #include <unistd.h>
 #include <cstdint>
+  
+namespace szp{  
         
 inline void symTransform_8bytes(unsigned char data[8])
 {
@@ -760,9 +757,7 @@ inline int compIdenticalLeadingBytesCount_float(unsigned char* preBytes, unsigne
 	return n;
 }
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* ----- #ifndef _szp_CompressionToolkit_H  ----- */
 

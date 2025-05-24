@@ -17,7 +17,9 @@
 #include "szp.h"
 #include "szp_CompressionToolkit.h"
 
-int checkFileExistance(char* filePath)
+using namespace szp;
+
+int szp_checkFileExistance(char* filePath)
 {
 	if( access( filePath, F_OK ) != -1 ) {
 		// file exists
@@ -28,7 +30,7 @@ int checkFileExistance(char* filePath)
 	}	
 }
 
-float** create2DArray_float(size_t m, size_t n)
+float** szp_create2DArray_float(size_t m, size_t n)
 {
 	size_t i=0;
 	float **data = (float**)malloc(sizeof(float*)*m);
@@ -37,7 +39,7 @@ float** create2DArray_float(size_t m, size_t n)
 	return data;
 }
 
-void free2DArray_float(float** data, size_t m)
+void szp_free2DArray_float(float** data, size_t m)
 {
 	size_t i = 0;
 	for(i=0;i<m;i++)
@@ -45,7 +47,7 @@ void free2DArray_float(float** data, size_t m)
 	free(data);	
 }
 
-float*** create3DArray_float(size_t p, size_t m, size_t n)
+float*** szp_create3DArray_float(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
 	float ***data = (float***)malloc(sizeof(float**)*m);
@@ -58,7 +60,7 @@ float*** create3DArray_float(size_t p, size_t m, size_t n)
 	return data;
 }
 
-void free3DArray_float(float*** data, size_t p, size_t m)
+void szp_free3DArray_float(float*** data, size_t p, size_t m)
 {
 	size_t i,j;
 	for(i=0;i<p;i++)
@@ -70,7 +72,7 @@ void free3DArray_float(float*** data, size_t p, size_t m)
 	free(data);	
 }
 
-double** create2DArray_double(size_t m, size_t n)
+double** szp_create2DArray_double(size_t m, size_t n)
 {
 	size_t i=0;
 	double **data = (double**)malloc(sizeof(double*)*m);
@@ -80,7 +82,7 @@ double** create2DArray_double(size_t m, size_t n)
 	return data;
 }
 
-void free2DArray_double(double** data, size_t m)
+void szp_free2DArray_double(double** data, size_t m)
 {
 	size_t i;
 	for(i=0;i<m;i++)
@@ -88,7 +90,7 @@ void free2DArray_double(double** data, size_t m)
 	free(data);	
 }
 
-double*** create3DArray_double(size_t p, size_t m, size_t n)
+double*** szp_create3DArray_double(size_t p, size_t m, size_t n)
 {
 	size_t i = 0, j = 0;
 	double ***data = (double***)malloc(sizeof(double**)*m);
@@ -101,7 +103,7 @@ double*** create3DArray_double(size_t p, size_t m, size_t n)
 	return data;
 }
 
-void free3DArray_double(double*** data, size_t p, size_t m)
+void szp_free3DArray_double(double*** data, size_t p, size_t m)
 {
 	size_t i,j;
 	for(i=0;i<p;i++)
@@ -113,7 +115,7 @@ void free3DArray_double(double*** data, size_t p, size_t m)
 	free(data);	
 }
 
-size_t checkFileSize(char *srcFilePath, int *status)
+size_t szp_checkFileSize(char *srcFilePath, int *status)
 {
 	size_t filesize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -130,7 +132,7 @@ size_t checkFileSize(char *srcFilePath, int *status)
     return filesize;
 }
 
-unsigned char *readByteData(char *srcFilePath, size_t *byteLength, int *status)
+unsigned char *szp_readByteData(char *srcFilePath, size_t *byteLength, int *status)
 {
 	FILE *pFile = fopen(srcFilePath, "rb");
     if (pFile == NULL)
@@ -158,12 +160,12 @@ unsigned char *readByteData(char *srcFilePath, size_t *byteLength, int *status)
     return byteBuf;
 }
 
-double *readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
+double *szp_readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		double *daBuf = readDoubleData_systemEndian(srcFilePath, nbEle,&state);
+		double *daBuf = szp_readDoubleData_systemEndian(srcFilePath, nbEle,&state);
 		*status = state;
 		return daBuf;
 	}
@@ -172,7 +174,7 @@ double *readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 		
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state==SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -195,20 +197,20 @@ double *readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
 }
 
 
-int8_t *readInt8Data(char *srcFilePath, size_t *nbEle, int *status)
+int8_t *szp_readInt8Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	int8_t *daBuf = readInt8Data_systemEndian(srcFilePath, nbEle, &state);
+	int8_t *daBuf = szp_readInt8Data_systemEndian(srcFilePath, nbEle, &state);
 	*status = state;
 	return daBuf;
 }
 
-int16_t *readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
+int16_t *szp_readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		int16_t *daBuf = readInt16Data_systemEndian(srcFilePath, nbEle, &state);
+		int16_t *daBuf = szp_readInt16Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -217,7 +219,7 @@ int16_t *readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -239,12 +241,12 @@ int16_t *readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-uint16_t *readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
+uint16_t *szp_readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		uint16_t *daBuf = readUInt16Data_systemEndian(srcFilePath, nbEle, &state);
+		uint16_t *daBuf = szp_readUInt16Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -253,7 +255,7 @@ uint16_t *readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -275,12 +277,12 @@ uint16_t *readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-int32_t *readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
+int32_t *szp_readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		int32_t *daBuf = readInt32Data_systemEndian(srcFilePath, nbEle, &state);
+		int32_t *daBuf = szp_readInt32Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -289,7 +291,7 @@ int32_t *readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -311,12 +313,12 @@ int32_t *readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-uint32_t *readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
+uint32_t *szp_readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		uint32_t *daBuf = readUInt32Data_systemEndian(srcFilePath, nbEle, &state);
+		uint32_t *daBuf = szp_readUInt32Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -325,7 +327,7 @@ uint32_t *readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -347,12 +349,12 @@ uint32_t *readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-int64_t *readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
+int64_t *szp_readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		int64_t *daBuf = readInt64Data_systemEndian(srcFilePath, nbEle, &state);
+		int64_t *daBuf = szp_readInt64Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -361,7 +363,7 @@ int64_t *readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -383,12 +385,12 @@ int64_t *readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-uint64_t *readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
+uint64_t *szp_readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		uint64_t *daBuf = readUInt64Data_systemEndian(srcFilePath, nbEle, &state);
+		uint64_t *daBuf = szp_readUInt64Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -397,7 +399,7 @@ uint64_t *readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -420,12 +422,12 @@ uint64_t *readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 }
 
 
-float *readFloatData(char *srcFilePath, size_t *nbEle, int *status)
+float *szp_readFloatData(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
 	if(dataEndianType==sysEndianType)
 	{
-		float *daBuf = readFloatData_systemEndian(srcFilePath, nbEle, &state);
+		float *daBuf = szp_readFloatData_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
 		return daBuf;
 	}
@@ -434,7 +436,7 @@ float *readFloatData(char *srcFilePath, size_t *nbEle, int *status)
 		size_t i,j;
 		
 		size_t byteLength;
-		unsigned char* bytes = readByteData(srcFilePath, &byteLength, &state);
+		unsigned char* bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 		if(state == SZ_FERR)
 		{
 			*status = SZ_FERR;
@@ -456,7 +458,7 @@ float *readFloatData(char *srcFilePath, size_t *nbEle, int *status)
 	}
 }
 
-double *readDoubleData_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+double *szp_readDoubleData_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -487,7 +489,7 @@ double *readDoubleData_systemEndian(char *srcFilePath, size_t *nbEle, int *statu
 }
 
 
-int8_t *readInt8Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+int8_t *szp_readInt8Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -524,7 +526,7 @@ int8_t *readInt8Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 }
 
 
-int16_t *readInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+int16_t *szp_readInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -560,7 +562,7 @@ int16_t *readInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *statu
 	return daBuf;	
 }
 
-uint16_t *readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+uint16_t *szp_readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -596,7 +598,7 @@ uint16_t *readUInt16Data_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
 	return daBuf;	
 }
 
-int32_t *readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+int32_t *szp_readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -632,7 +634,7 @@ int32_t *readInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *statu
 	return daBuf;	
 }
 
-uint32_t *readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+uint32_t *szp_readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -668,7 +670,7 @@ uint32_t *readUInt32Data_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
 	return daBuf;	
 }
 
-int64_t *readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+int64_t *szp_readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -704,7 +706,7 @@ int64_t *readInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *statu
 	return daBuf;
 }
 
-uint64_t *readUInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+uint64_t *szp_readUInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -740,7 +742,7 @@ uint64_t *readUInt64Data_systemEndian(char *srcFilePath, size_t *nbEle, int *sta
 	return daBuf;
 }
 
-float *readFloatData_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
+float *szp_readFloatData_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
 {
 	size_t inSize;
 	FILE *pFile = fopen(srcFilePath, "rb");
@@ -776,7 +778,7 @@ float *readFloatData_systemEndian(char *srcFilePath, size_t *nbEle, int *status)
     return daBuf;
 }
 
-void writeByteData(unsigned char *bytes, size_t byteLength, char *tgtFilePath, int *status)
+void szp_writeByteData(unsigned char *bytes, size_t byteLength, char *tgtFilePath, int *status)
 {
 	FILE *pFile = fopen(tgtFilePath, "wb");
     if (pFile == NULL)
@@ -791,7 +793,7 @@ void writeByteData(unsigned char *bytes, size_t byteLength, char *tgtFilePath, i
     *status = SZ_SCES;
 }
 
-void writeDoubleData(double *data, size_t nbEle, char *tgtFilePath, int *status)
+void szp_writeDoubleData(double *data, size_t nbEle, char *tgtFilePath, int *status)
 {
 	size_t i = 0;
 	char s[64];
@@ -813,7 +815,7 @@ void writeDoubleData(double *data, size_t nbEle, char *tgtFilePath, int *status)
     *status = SZ_SCES;
 }
 
-void writeFloatData(float *data, size_t nbEle, char *tgtFilePath, int *status)
+void szp_writeFloatData(float *data, size_t nbEle, char *tgtFilePath, int *status)
 {
 	size_t i = 0;
 	char s[64];
@@ -837,18 +839,18 @@ void writeFloatData(float *data, size_t nbEle, char *tgtFilePath, int *status)
     *status = SZ_SCES;
 }
 
-void writeData(void *data, int dataType, size_t nbEle, char *tgtFilePath, int *status)
+void szp_writeData(void *data, int dataType, size_t nbEle, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	if(dataType == SZ_FLOAT)
 	{
 		float* dataArray = (float *)data;
-		writeFloatData(dataArray, nbEle, tgtFilePath, &state);
+		szp_writeFloatData(dataArray, nbEle, tgtFilePath, &state);
 	}
 	else if(dataType == SZ_DOUBLE)
 	{
 		double* dataArray = (double *)data;
-		writeDoubleData(dataArray, nbEle, tgtFilePath, &state);	
+		szp_writeDoubleData(dataArray, nbEle, tgtFilePath, &state);	
 	}
 	else
 	{
@@ -859,7 +861,7 @@ void writeData(void *data, int dataType, size_t nbEle, char *tgtFilePath, int *s
 	*status = state;
 }
 
-void writeFloatData_inBytes(float *data, size_t nbEle, char* tgtFilePath, int *status)
+void szp_writeFloatData_inBytes(float *data, size_t nbEle, char* tgtFilePath, int *status)
 {
 	size_t i = 0; 
 	int state = SZ_SCES;
@@ -875,12 +877,12 @@ void writeFloatData_inBytes(float *data, size_t nbEle, char* tgtFilePath, int *s
 	}
 
 	size_t byteLength = nbEle*sizeof(float);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeDoubleData_inBytes(double *data, size_t nbEle, char* tgtFilePath, int *status)
+void szp_writeDoubleData_inBytes(double *data, size_t nbEle, char* tgtFilePath, int *status)
 {
 	size_t i = 0, index = 0; 
 	int state = SZ_SCES;
@@ -901,82 +903,82 @@ void writeDoubleData_inBytes(double *data, size_t nbEle, char* tgtFilePath, int 
 	}
 
 	size_t byteLength = nbEle*sizeof(double);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeShortData_inBytes(short *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeShortData_inBytes(short *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*2;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertShortArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeUShortData_inBytes(unsigned short *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeUShortData_inBytes(unsigned short *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*2;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertUShortArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeIntData_inBytes(int *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeIntData_inBytes(int *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*4;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertIntArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeUIntData_inBytes(unsigned int *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeUIntData_inBytes(unsigned int *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*4;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertUIntArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeLongData_inBytes(int64_t *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeLongData_inBytes(int64_t *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*8;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertLongArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-void writeULongData_inBytes(uint64_t *states, size_t stateLength, char *tgtFilePath, int *status)
+void szp_writeULongData_inBytes(uint64_t *states, size_t stateLength, char *tgtFilePath, int *status)
 {
 	int state = SZ_SCES;
 	size_t byteLength = stateLength*8;
 	unsigned char* bytes = (unsigned char*)malloc(byteLength*sizeof(char));
 	convertULongArrayToBytes(states, stateLength, bytes);
-	writeByteData(bytes, byteLength, tgtFilePath, &state);
+	szp_writeByteData(bytes, byteLength, tgtFilePath, &state);
 	free(bytes);
 	*status = state;
 }
 
-unsigned short* readShortData(char *srcFilePath, size_t *dataLength, int *status)
+unsigned short* szp_readShortData(char *srcFilePath, size_t *dataLength, int *status)
 {
 	size_t byteLength = 0; 
 	int state = SZ_SCES;
-	unsigned char * bytes = readByteData(srcFilePath, &byteLength, &state);
+	unsigned char * bytes = szp_readByteData(srcFilePath, &byteLength, &state);
 	*dataLength = byteLength/2;
 	unsigned short* states = convertByteDataToUShortArray(bytes, byteLength);
 	free(bytes);
@@ -984,7 +986,7 @@ unsigned short* readShortData(char *srcFilePath, size_t *dataLength, int *status
 	return states;
 }
 
-void writeStrings(int nbStr, char *str[], char *tgtFilePath, int *status)
+void szp_writeStrings(int nbStr, char *str[], char *tgtFilePath, int *status)
 {
 	int i = 0;
 	char s[256];
@@ -1005,4 +1007,3 @@ void writeStrings(int nbStr, char *str[], char *tgtFilePath, int *status)
 	fclose(pFile);
 	*status = SZ_SCES;
 }
-

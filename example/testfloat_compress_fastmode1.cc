@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
   int status = 0;
   size_t nbEle;
-  float *data = readFloatData(oriFilePath, &nbEle, &status);
+  float *data = szp_readFloatData(oriFilePath, &nbEle, &status);
   if (status != SZ_SCES)
   {
     printf("Error: data file %s cannot be read!\n", oriFilePath);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
   printf("compression size = %zu, CR = %f\n", outSize, 1.0f * nbEle * sizeof(float) / outSize);
-  writeByteData(bytes, outSize, outputFilePath, &status);
+  szp_writeByteData(bytes, outSize, outputFilePath, &status);
   if (status != SZ_SCES)
   {
     printf("Error: data file %s cannot be written!\n", outputFilePath);

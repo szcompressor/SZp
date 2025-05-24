@@ -16,6 +16,8 @@
 #include <cstdint>
 #include "szp_CompressionToolkit.h"
 
+namespace szp{
+
 short* convertByteDataToShortArray(unsigned char* bytes, size_t byteLength)
 {
 	lint16 ls;
@@ -465,4 +467,6 @@ double getRealPrecision_int(long valueRangeSize, int errBoundMode, double absErr
 	}
 	*status = state;
 	return precision;
+}
+
 }

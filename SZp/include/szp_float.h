@@ -14,6 +14,10 @@
 #include <string.h>
 #include "szp_defines.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 unsigned char *
 szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
                                              size_t nbEle, int blockSize);
@@ -39,5 +43,8 @@ unsigned char *
 szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float absErrBound,
                                           size_t nbEle, int blockSize);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ----- #ifndef _szp_Float_H  ----- */

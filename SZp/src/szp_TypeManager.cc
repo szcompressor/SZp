@@ -1,12 +1,14 @@
 /**
  *  @file szp_TypeManager.c
- *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
+ *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>, Sheng Di <sdi1@anl.gov>
  *  @date Oct, 2023
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "szp.h"
+
+namespace szp{
 
 size_t Jiajun_save_fixed_length_bits(unsigned int *unsignintArray, size_t intArrayLength, unsigned char *result, unsigned int bit_count)
 {
@@ -1672,4 +1674,6 @@ void convertByteArray2IntArray_fast_7b(size_t stepLength, unsigned char *byteArr
 inline int getLeftMovingSteps(size_t k, unsigned char resiBitLength)
 {
 	return 8 - k % 8 - resiBitLength;
+}
+
 }
