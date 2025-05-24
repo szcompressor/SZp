@@ -298,14 +298,11 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     float *newData_perthread = newData + lo;
     size_t i = 0;
     size_t j = 0;
-    size_t k = 0;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
 
-    
-    int max = 0;
     int bit_count = 0;
     unsigned char *outputBytes_perthread = rcp + offsets[tid]; 
     unsigned char *block_pointer = outputBytes_perthread;
@@ -322,7 +319,6 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
-    unsigned int signbytelength = 0; 
     unsigned int savedbitsbytelength = 0;
     if (num_full_block_in_tb > 0)
     {
@@ -441,14 +437,11 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     float *newData_perthread = newData + lo;
     size_t i = 0;
     size_t j = 0;
-    size_t k = 0;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
 
-    
-    int max = 0;
     int bit_count = 0;
     unsigned char *outputBytes_perthread = rcp + offsets[tid]; 
     total_memaccess += sizeof(size_t);
@@ -471,7 +464,6 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
-    unsigned int signbytelength = 0; 
     unsigned int savedbitsbytelength = 0;
     if (num_full_block_in_tb > 0)
     {

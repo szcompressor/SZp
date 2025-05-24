@@ -69,36 +69,35 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Name of package */
-#define PACKAGE "hzccl"
+#define PACKAGE "szp"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "jhuan380@ucr.edu"
+#define PACKAGE_BUGREPORT "sdi1@anl.gov"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "hZCCL"
+#define PACKAGE_NAME "szp"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "hZCCL 1.0"
+#define PACKAGE_STRING "szp 1.1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "hzccl"
+#define PACKAGE_TARNAME "szp"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.0"
+#define PACKAGE_VERSION "1.1"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.0"
+#define VERSION "1.1"
 
 /* Define to rpl_malloc if the replacement function should be used. */
 /* #undef malloc */

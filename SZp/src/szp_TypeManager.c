@@ -29,7 +29,7 @@ size_t Jiajun_save_fixed_length_bits(unsigned int *unsignintArray, size_t intArr
 	}
 
 	size_t n = 0;
-	unsigned int tmp, type;
+	unsigned int tmp;
 	i = 0;
 	if (byte_count > 0)
 	{
@@ -443,7 +443,7 @@ size_t Jiajun_extract_fixed_length_bits(unsigned char *result, size_t intArrayLe
 	
 	
 	size_t n = 0;
-	unsigned int tmp1, tmp2, type;
+	unsigned int tmp1, tmp2;
 	i = 0;
 	size_t byte_offset = byte_count * intArrayLength;
 

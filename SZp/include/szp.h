@@ -13,7 +13,6 @@
 #include <time.h>          /* For time(), in seconds */
 #include <math.h>
 #include "szp_rw.h"
-#include "szp_utility.h"
 #include "szp_defines.h"
 #include "szp_float.h"
 #include "szpd_float.h"

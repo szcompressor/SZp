@@ -1,6 +1,6 @@
 /**
  *  @file szp_float.h
- *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>
+ *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>, Sheng Di <sdi1@anl.gov>
  *  @date Oct, 2023
  */
 
@@ -221,7 +221,7 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
     unsigned int nbThreads = 0;
     double inver_bound = 0;
     unsigned int threadblocksize = 0;
-    unsigned int remainder = 0;
+    //unsigned int remainder = 0;
     unsigned int block_size = blockSize;
     unsigned int num_full_block_in_tb = 0;
     unsigned int num_remainder_in_tb = 0;
@@ -239,7 +239,7 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
-            remainder = nbEle % nbThreads;
+           //remainder = nbEle % nbThreads;
             num_full_block_in_tb = (threadblocksize - 1) / block_size; 
             num_remainder_in_tb = (threadblocksize - 1) % block_size;
             
@@ -941,7 +941,6 @@ void szp_float_openmp_threadblock_arg(unsigned char *outputBytes, float *oriData
     
 #else
     printf("Error! OpenMP not supported!\n");
-    return NULL;
 #endif
 }
 
@@ -951,7 +950,6 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
 
     float *op = oriData;
 
-    size_t maxPreservedBufferSize = sizeof(float) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     
     unsigned char *real_outputBytes; 
@@ -962,7 +960,7 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
 
     double inver_bound = 0;
     unsigned int threadblocksize = 0;
-    unsigned int remainder = 0;
+    //unsigned int remainder = 0;
     unsigned int block_size = blockSize;
     unsigned int num_full_block_in_tb = 0;
     unsigned int num_remainder_in_tb = 0;
@@ -976,13 +974,13 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
     maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
     inver_bound = 1 / absErrBound;
     threadblocksize = nbEle / nbThreads;
-    remainder = nbEle % nbThreads;
+    //remainder = nbEle % nbThreads; //this remainder was not used in the following code.
     num_full_block_in_tb = (threadblocksize - 1) / block_size; 
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     size_t i = 0;
     size_t j = 0;
-    size_t k = 0;
+    //size_t k = 0;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
@@ -1160,7 +1158,6 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
 
     float *op = oriData;
 
-    size_t maxPreservedBufferSize = sizeof(float) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     
     unsigned char *real_outputBytes; 
@@ -1172,7 +1169,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
 
     double inver_bound = 0;
     unsigned int threadblocksize = 0;
-    unsigned int remainder = 0;
+    //unsigned int remainder = 0;
     unsigned int block_size = blockSize;
     unsigned int num_full_block_in_tb = 0;
     unsigned int num_remainder_in_tb = 0;
@@ -1187,13 +1184,12 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
     maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
     inver_bound = 1 / absErrBound;
     threadblocksize = nbEle / nbThreads;
-    remainder = nbEle % nbThreads;
+    //remainder = nbEle % nbThreads;
     num_full_block_in_tb = (threadblocksize - 1) / block_size; 
     num_remainder_in_tb = (threadblocksize - 1) % block_size;
 
     size_t i = 0;
     size_t j = 0;
-    size_t k = 0;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
