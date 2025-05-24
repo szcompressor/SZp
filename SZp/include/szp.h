@@ -16,6 +16,8 @@
 #include "szp_defines.h"
 #include "szp_float.h"
 #include "szpd_float.h"
+#include "szp_double.h"
+#include "szpd_double.h"
 #include "szp_TypeManager.h"
 
 #ifdef _WIN32
@@ -29,7 +31,7 @@ extern "C" {
 #endif
 
 unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
-                                      float relBoundRatio, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
+                                      float relBoundRatio, size_t nbEle, int blockSize);
 
 #ifdef __cplusplus
 }

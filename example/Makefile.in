@@ -93,7 +93,8 @@ bin_PROGRAMS = testfloat_compress_fastmode1$(EXEEXT) \
 	testfloat_decompress_fastmode1$(EXEEXT)
 subdir = example
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_openmp.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -236,6 +237,8 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPENMP_CFLAGS = @OPENMP_CFLAGS@
+OPENMP_CXXFLAGS = @OPENMP_CXXFLAGS@
 OPENMP_FLAGS = @OPENMP_FLAGS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
@@ -309,8 +312,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-AM_CPPFLAGS = -I../SZp/include $(am__append_1)
+AM_LDFLAGS = @OPENMP_CXXFLAGS@
 AM_FCFLAGS = -I../SZp/include -I../SZp
+AM_CXXFLAGS = -I../SZp/include -I../SZp $(am__append_1)
 testfloat_compress_fastmode1_SOURCES = testfloat_compress_fastmode1.cc
 testfloat_compress_fastmode1_LDADD = ../SZp/.libs/libszp.a -lm
 testfloat_decompress_fastmode1_SOURCES = testfloat_decompress_fastmode1.cc

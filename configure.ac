@@ -11,6 +11,12 @@ AC_CONFIG_HEADERS([config.h])
 # : ${CFLAGS=-ggdb -O0 -std=c99 -Wall}
 : ${CFLAGS=-O3 -std=c99 -Wall}
 : ${CPPFLAGS=-O3 -Wall}
+
+m4_include([m4/ax_openmp.m4])
+AX_OPENMP
+AC_SUBST([OPENMP_CFLAGS])
+AC_SUBST([OPENMP_CXXFLAGS])
+
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_FC

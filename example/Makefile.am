@@ -1,10 +1,10 @@
 AUTOMAKE_OPTIONS=foreign
-AM_CPPFLAGS = -I../SZp/include
+AM_LDFLAGS = @OPENMP_CXXFLAGS@
 AM_FCFLAGS = -I../SZp/include -I../SZp
+AM_CXXFLAGS = -I../SZp/include -I../SZp
 if OPENMP
-AM_CPPFLAGS+=-fopenmp
+AM_CXXFLAGS+=-fopenmp
 endif
-
 
 bin_PROGRAMS=testfloat_compress_fastmode1 testfloat_decompress_fastmode1
 

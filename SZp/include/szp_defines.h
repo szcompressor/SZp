@@ -30,6 +30,8 @@
 #define REL_AND_PW_REL 13
 #define REL_OR_PW_REL 14
 
+#define SZP_NONRANDOMACCESS 1
+#define SZP_RANDOMACCESS 2
 
 #define SZ_FLOAT 0
 #define SZ_DOUBLE 1
@@ -47,7 +49,6 @@
 
 #define LITTLE_ENDIAN_SYSTEM 0 //refers to the endian type of the system
 #define BIG_ENDIAN_SYSTEM 1
-
 
 #define szp_NO_BLOCK_FAST_CMPR 1
 #define szp_WITH_BLOCK_FAST_CMPR 2

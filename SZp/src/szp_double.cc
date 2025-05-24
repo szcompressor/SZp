@@ -1,5 +1,5 @@
 /**
- *  @file szp_float.h
+ *  @file szp_double.h
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>, Sheng Di <sdi1@anl.gov>
  *  @date Oct, 2023
  */
@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "szp.h"
-#include "szp_float.h"
+#include "szp_double.h"
 #include <assert.h>
 #include <math.h>
 #include "szp_TypeManager.h"
@@ -22,12 +22,12 @@
 using namespace szp;
 
 int *
-szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
+szp_double_openmp_direct_predict_quantization(double *oriData, size_t *outSize, double absErrBound,
                                              size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
 
-    float *op = oriData;
+    double *op = oriData;
 
     size_t i = 0;
 
@@ -78,12 +78,12 @@ szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, fl
 }
 
 int *
-szp_float_openmp_threadblock_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
+szp_double_openmp_threadblock_predict_quantization(double *oriData, size_t *outSize, double absErrBound,
                                                   size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
     
-    float *op = oriData;
+    double *op = oriData;
 
   
     int *diff_arr = (int *)malloc(nbEle * sizeof(int));
@@ -146,15 +146,15 @@ szp_float_openmp_threadblock_predict_quantization(float *oriData, size_t *outSiz
 }
 
 unsigned char *
-szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
+szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBound,
                              size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
     
-    float *op = oriData;
+    double *op = oriData;
 
     
-    size_t maxPreservedBufferSize = sizeof(float) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
     unsigned char *real_outputBytes; 
@@ -182,10 +182,10 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-            maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+            maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
-            remainder = nbEle % nbThreads;
+           remainder = nbEle % nbThreads;
             num_full_block_in_tb = (threadblocksize - 1) / block_size; 
             num_remainder_in_tb = (threadblocksize - 1) % block_size;
             
@@ -518,15 +518,15 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
 #endif
 }
 
-void szp_float_openmp_threadblock_arg(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+void szp_double_openmp_threadblock_arg(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
                                       size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
     
-    float *op = oriData;
+    double *op = oriData;
 
     
-    size_t maxPreservedBufferSize = sizeof(float) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     
     unsigned char *real_outputBytes; 
@@ -556,7 +556,7 @@ void szp_float_openmp_threadblock_arg(unsigned char *outputBytes, float *oriData
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-            maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+            maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
             remainder = nbEle % nbThreads;
@@ -890,11 +890,11 @@ void szp_float_openmp_threadblock_arg(unsigned char *outputBytes, float *oriData
 #endif
 }
 
-void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+void szp_double_single_thread_arg(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
                                  size_t nbEle, int blockSize)
 {
 
-    float *op = oriData;
+    double *op = oriData;
 
     size_t maxPreservedBufferSize_perthread = 0;
     
@@ -917,7 +917,7 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
     outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
     offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-    maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+    maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
     inver_bound = 1 / absErrBound;
     threadblocksize = nbEle / nbThreads;
     //remainder = nbEle % nbThreads; //this remainder was not used in the following code.
@@ -1096,13 +1096,13 @@ void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, siz
     free(offsets_perthread_arr);
 }
 
-size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+size_t szp_double_single_thread_arg_record(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
                                        size_t nbEle, int blockSize)
 {
 
     size_t total_memaccess = 0;
 
-    float *op = oriData;
+    double *op = oriData;
 
     size_t maxPreservedBufferSize_perthread = 0;
     
@@ -1127,7 +1127,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
     outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
     offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-    maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+    maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
     inver_bound = 1 / absErrBound;
     threadblocksize = nbEle / nbThreads;
     //remainder = nbEle % nbThreads;
@@ -1150,7 +1150,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
     unsigned int bit_count = 0;
     unsigned char *block_pointer = outputBytes_perthread;
     prior = (op[lo]) * inver_bound;
-    total_memaccess += sizeof(float);
+    total_memaccess += sizeof(double);
     
     memcpy(block_pointer, &prior, sizeof(int));
     total_memaccess += sizeof(int);
@@ -1173,7 +1173,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
             for (j = 0; j < block_size; j++)
             {
                 current = (op[i + j]) * inver_bound;
-                total_memaccess += sizeof(float);
+                total_memaccess += sizeof(double);
                 diff = current - prior;
                 prior = current;
                 if (diff == 0)
@@ -1249,7 +1249,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
             for (j = 0; j < num_remainder_in_tb; j++)
             {
                 current = (op[i + j]) * inver_bound;
-                total_memaccess += sizeof(float);
+                total_memaccess += sizeof(double);
                 diff = current - prior;
                 prior = current;
                 if (diff == 0)
@@ -1343,15 +1343,15 @@ size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *ori
 }
 
 unsigned char *
-szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float absErrBound,
+szp_double_openmp_threadblock_randomaccess(double *oriData, size_t *outSize, double absErrBound,
                                           size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
     
-    float *op = oriData;
+    double *op = oriData;
 
     
-    size_t maxPreservedBufferSize = sizeof(float) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
     unsigned char *real_outputBytes; 
@@ -1380,7 +1380,7 @@ szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-            maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+            maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
             remainder = nbEle % nbThreads;

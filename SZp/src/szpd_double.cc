@@ -1,5 +1,5 @@
 /**
- *  @file szpd_float.h
+ *  @file szpd_double.h
  *  @author Jiajun Huang <jiajunhuang19990916@gmail.com>, Sheng Di <sdi1@anl.gov>
  *  @date Oct, 2023
  */
@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include "szpd_float.h"
+#include "szpd_double.h"
 #include <assert.h>
 #include <math.h>
 #include "szp_TypeManager.h"
@@ -20,10 +20,10 @@
 
 using namespace szp;
 
-void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_double_decompress_openmp_threadblock(double **newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
-    *newData = (float *)malloc(sizeof(float) * nbEle);
+    *newData = (double *)malloc(sizeof(double) * nbEle);
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
@@ -47,7 +47,7 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
         int tid = omp_get_thread_num();
         int lo = tid * threadblocksize;
         int hi = (tid + 1) * threadblocksize;
-        float *newData_perthread = *newData + lo;
+        double *newData_perthread = *newData + lo;
         size_t i = 0;
         size_t j = 0;
         size_t k = 0;
@@ -64,11 +64,11 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
         memcpy(&prior, block_pointer, sizeof(int));
         block_pointer += sizeof(unsigned int);
 
-        float ori_prior = 0.0;
-        float ori_current = 0.0;
+        double ori_prior = 0.0;
+        double ori_current = 0.0;
 
-        ori_prior = (float)prior * absErrBound;
-        memcpy(newData_perthread, &ori_prior, sizeof(float)); 
+        ori_prior = (double)prior * absErrBound;
+        memcpy(newData_perthread, &ori_prior, sizeof(double)); 
         newData_perthread += 1;
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
@@ -89,11 +89,11 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                 
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     
                     for (j = 0; j < block_size; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -116,9 +116,9 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -133,10 +133,10 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                 block_pointer++;
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     for (j = 0; j < num_remainder_in_tb; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -158,9 +158,9 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -174,8 +174,8 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
             unsigned int num_remainder_in_rm = (remainder - 1) % block_size;
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(int);
-            ori_prior = (float)prior * absErrBound;
-            memcpy(newData_perthread, &ori_prior, sizeof(float));
+            ori_prior = (double)prior * absErrBound;
+            memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
             if (num_full_block_in_rm > 0)
             {
@@ -186,10 +186,10 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < block_size; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -211,9 +211,9 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -229,10 +229,10 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < num_remainder_in_rm; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -254,9 +254,9 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -273,7 +273,7 @@ void szp_float_decompress_openmp_threadblock(float **newData, size_t nbEle, floa
 #endif
 }
 
-void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 
     
@@ -297,7 +297,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     int tid = 0;
     size_t lo = tid * threadblocksize;
     size_t hi = (tid + 1) * threadblocksize;
-    float *newData_perthread = newData + lo;
+    double *newData_perthread = newData + lo;
     size_t i = 0;
     int j = 0;
 
@@ -311,11 +311,11 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     memcpy(&prior, block_pointer, sizeof(int));
     block_pointer += sizeof(unsigned int);
 
-    float ori_prior = 0.0;
-    float ori_current = 0.0;
+    double ori_prior = 0.0;
+    double ori_current = 0.0;
 
-    ori_prior = (float)prior * absErrBound;
-    memcpy(newData_perthread, &ori_prior, sizeof(float)); 
+    ori_prior = (double)prior * absErrBound;
+    memcpy(newData_perthread, &ori_prior, sizeof(double)); 
     newData_perthread += 1;
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
@@ -331,11 +331,11 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
             
             if (bit_count == 0)
             {
-                ori_prior = (float)prior * absErrBound;
+                ori_prior = (double)prior * absErrBound;
                 
                 for (j = 0; j < block_size; j++)
                 {
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
                 }
             }
@@ -358,9 +358,9 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
                         diff = 0 - temp_predict_arr[j];
                     }
                     current = prior + diff;
-                    ori_current = (float)current * absErrBound;
+                    ori_current = (double)current * absErrBound;
                     prior = current;
-                    memcpy(newData_perthread, &ori_current, sizeof(float));
+                    memcpy(newData_perthread, &ori_current, sizeof(double));
                     newData_perthread++;
                 }
             }
@@ -375,10 +375,10 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
             block_pointer++;
             if (bit_count == 0)
             {
-                ori_prior = (float)prior * absErrBound;
+                ori_prior = (double)prior * absErrBound;
                 for (j = 0; j < num_remainder_in_tb; j++)
                 {
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
                 }
             }
@@ -400,9 +400,9 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
                         diff = 0 - temp_predict_arr[j];
                     }
                     current = prior + diff;
-                    ori_current = (float)current * absErrBound;
+                    ori_current = (double)current * absErrBound;
                     prior = current;
-                    memcpy(newData_perthread, &ori_current, sizeof(float));
+                    memcpy(newData_perthread, &ori_current, sizeof(double));
                     newData_perthread++;
                 }
             }
@@ -412,7 +412,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
     free(temp_sign_arr);
 }
 
-size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
     size_t total_memaccess = 0;
     
@@ -436,7 +436,7 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     int tid = 0;
     size_t lo = tid * threadblocksize;
     size_t hi = (tid + 1) * threadblocksize;
-    float *newData_perthread = newData + lo;
+    double *newData_perthread = newData + lo;
     size_t i = 0;
     int j = 0;
 
@@ -454,13 +454,13 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     total_memaccess += sizeof(int);
     total_memaccess += sizeof(int);
 
-    float ori_prior = 0.0;
-    float ori_current = 0.0;
+    double ori_prior = 0.0;
+    double ori_current = 0.0;
 
-    ori_prior = (float)prior * absErrBound;
-    memcpy(newData_perthread, &ori_prior, sizeof(float)); 
-    total_memaccess += sizeof(float);
-    total_memaccess += sizeof(float);
+    ori_prior = (double)prior * absErrBound;
+    memcpy(newData_perthread, &ori_prior, sizeof(double)); 
+    total_memaccess += sizeof(double);
+    total_memaccess += sizeof(double);
     newData_perthread += 1;
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
@@ -477,14 +477,14 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
             
             if (bit_count == 0)
             {
-                ori_prior = (float)prior * absErrBound;
+                ori_prior = (double)prior * absErrBound;
                 
                 for (j = 0; j < block_size; j++)
                 {
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
-                    total_memaccess += sizeof(float);
-                    total_memaccess += sizeof(float);
+                    total_memaccess += sizeof(double);
+                    total_memaccess += sizeof(double);
                 }
             }
             else
@@ -511,11 +511,11 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
                         total_memaccess += sizeof(unsigned int);
                     }
                     current = prior + diff;
-                    ori_current = (float)current * absErrBound;
+                    ori_current = (double)current * absErrBound;
                     prior = current;
-                    memcpy(newData_perthread, &ori_current, sizeof(float));
-                    total_memaccess += sizeof(float);
-                    total_memaccess += sizeof(float);
+                    memcpy(newData_perthread, &ori_current, sizeof(double));
+                    total_memaccess += sizeof(double);
+                    total_memaccess += sizeof(double);
                     newData_perthread++;
                 }
             }
@@ -531,13 +531,13 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
             block_pointer++;
             if (bit_count == 0)
             {
-                ori_prior = (float)prior * absErrBound;
+                ori_prior = (double)prior * absErrBound;
                 for (j = 0; j < num_remainder_in_tb; j++)
                 {
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
-                    total_memaccess += sizeof(float);
-                    total_memaccess += sizeof(float);
+                    total_memaccess += sizeof(double);
+                    total_memaccess += sizeof(double);
                 }
             }
             else
@@ -566,12 +566,12 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
                         total_memaccess += sizeof(unsigned int);
                     }
                     current = prior + diff;
-                    ori_current = (float)current * absErrBound;
+                    ori_current = (double)current * absErrBound;
                     prior = current;
-                    memcpy(newData_perthread, &ori_current, sizeof(float));
+                    memcpy(newData_perthread, &ori_current, sizeof(double));
                     newData_perthread++;
-                    total_memaccess += sizeof(float);
-                    total_memaccess += sizeof(float);
+                    total_memaccess += sizeof(double);
+                    total_memaccess += sizeof(double);
                 }
             }
         }
@@ -582,7 +582,7 @@ size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEl
     return total_memaccess;
 }
 
-void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
     
@@ -609,7 +609,7 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
         int tid = omp_get_thread_num();
         int lo = tid * threadblocksize;
         int hi = (tid + 1) * threadblocksize;
-        float *newData_perthread = newData + lo;
+        double *newData_perthread = newData + lo;
         size_t i = 0;
         size_t j = 0;
         size_t k = 0;
@@ -626,11 +626,11 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
         memcpy(&prior, block_pointer, sizeof(int));
         block_pointer += sizeof(unsigned int);
 
-        float ori_prior = 0.0;
-        float ori_current = 0.0;
+        double ori_prior = 0.0;
+        double ori_current = 0.0;
 
-        ori_prior = (float)prior * absErrBound;
-        memcpy(newData_perthread, &ori_prior, sizeof(float)); 
+        ori_prior = (double)prior * absErrBound;
+        memcpy(newData_perthread, &ori_prior, sizeof(double)); 
         newData_perthread += 1;
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
@@ -647,11 +647,11 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                 
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     
                     for (j = 0; j < block_size; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -674,9 +674,9 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -691,10 +691,10 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                 block_pointer++;
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     for (j = 0; j < num_remainder_in_tb; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -716,9 +716,9 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -732,8 +732,8 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
             unsigned int num_remainder_in_rm = (remainder - 1) % block_size;
             memcpy(&prior, block_pointer, sizeof(int));
             block_pointer += sizeof(int);
-            ori_prior = (float)prior * absErrBound;
-            memcpy(newData_perthread, &ori_prior, sizeof(float));
+            ori_prior = (double)prior * absErrBound;
+            memcpy(newData_perthread, &ori_prior, sizeof(double));
             newData_perthread += 1;
             if (num_full_block_in_rm > 0)
             {
@@ -744,10 +744,10 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < block_size; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -769,9 +769,9 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -787,10 +787,10 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < num_remainder_in_rm; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -812,9 +812,9 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -831,10 +831,10 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
 #endif
 }
 
-void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_double_decompress_openmp_threadblock_randomaccess(double **newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
-    *newData = (float *)malloc(sizeof(float) * nbEle);
+    *newData = (double *)malloc(sizeof(double) * nbEle);
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
@@ -859,7 +859,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
         int tid = omp_get_thread_num();
         int lo = tid * threadblocksize;
         int hi = (tid + 1) * threadblocksize;
-        float *newData_perthread = *newData + lo;
+        double *newData_perthread = *newData + lo;
         size_t i = 0;
         size_t j = 0;
         size_t k = 0;
@@ -873,8 +873,8 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
         unsigned char *outputBytes_perthread = rcp + offsets[tid]; 
         unsigned char *block_pointer = outputBytes_perthread;
 
-        float ori_prior = 0.0;
-        float ori_current = 0.0;
+        double ori_prior = 0.0;
+        double ori_current = 0.0;
 
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc((new_block_size) * sizeof(unsigned char));
@@ -888,8 +888,8 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
             {
                 memcpy(&prior, block_pointer, sizeof(int));
                 block_pointer += sizeof(unsigned int);
-                ori_prior = (float)prior * absErrBound;
-                memcpy(newData_perthread, &ori_prior, sizeof(float)); 
+                ori_prior = (double)prior * absErrBound;
+                memcpy(newData_perthread, &ori_prior, sizeof(double)); 
                 newData_perthread += 1;
 
                 bit_count = block_pointer[0];
@@ -897,11 +897,11 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
 
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     
                     for (j = 0; j < new_block_size; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -924,9 +924,9 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -939,18 +939,18 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
             {
                 memcpy(&prior, block_pointer, sizeof(int));
                 block_pointer += sizeof(unsigned int);
-                ori_prior = (float)prior * absErrBound;
-                memcpy(newData_perthread, &ori_prior, sizeof(float)); 
+                ori_prior = (double)prior * absErrBound;
+                memcpy(newData_perthread, &ori_prior, sizeof(double)); 
                 newData_perthread += 1;
 
                 bit_count = block_pointer[0];
                 block_pointer++;
                 if (bit_count == 0)
                 {
-                    ori_prior = (float)prior * absErrBound;
+                    ori_prior = (double)prior * absErrBound;
                     for (j = 1; j < num_remainder_in_tb; j++)
                     {
-                        memcpy(newData_perthread, &ori_prior, sizeof(float));
+                        memcpy(newData_perthread, &ori_prior, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -972,9 +972,9 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                             diff = 0 - temp_predict_arr[j];
                         }
                         current = prior + diff;
-                        ori_current = (float)current * absErrBound;
+                        ori_current = (double)current * absErrBound;
                         prior = current;
-                        memcpy(newData_perthread, &ori_current, sizeof(float));
+                        memcpy(newData_perthread, &ori_current, sizeof(double));
                         newData_perthread++;
                     }
                 }
@@ -994,17 +994,17 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                 {
                     memcpy(&prior, block_pointer, sizeof(int));
                     block_pointer += sizeof(int);
-                    ori_prior = (float)prior * absErrBound;
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    ori_prior = (double)prior * absErrBound;
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
                     bit_count = block_pointer[0];
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < new_block_size; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -1026,9 +1026,9 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -1041,17 +1041,17 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                 {
                     memcpy(&prior, block_pointer, sizeof(int));
                     block_pointer += sizeof(int);
-                    ori_prior = (float)prior * absErrBound;
-                    memcpy(newData_perthread, &ori_prior, sizeof(float));
+                    ori_prior = (double)prior * absErrBound;
+                    memcpy(newData_perthread, &ori_prior, sizeof(double));
                     newData_perthread++;
                     bit_count = block_pointer[0];
                     block_pointer++;
                     if (bit_count == 0)
                     {
-                        ori_prior = (float)prior * absErrBound;
+                        ori_prior = (double)prior * absErrBound;
                         for (j = 0; j < num_remainder_in_rm - 1; j++)
                         {
-                            memcpy(newData_perthread, &ori_prior, sizeof(float));
+                            memcpy(newData_perthread, &ori_prior, sizeof(double));
                             newData_perthread++;
                         }
                     }
@@ -1073,9 +1073,9 @@ void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_
                                 diff = 0 - temp_predict_arr[j];
                             }
                             current = prior + diff;
-                            ori_current = (float)current * absErrBound;
+                            ori_current = (double)current * absErrBound;
                             prior = current;
-                            memcpy(newData_perthread, &ori_current, sizeof(float));
+                            memcpy(newData_perthread, &ori_current, sizeof(double));
                             newData_perthread++;
                         }
                     }

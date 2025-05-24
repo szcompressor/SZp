@@ -18,11 +18,11 @@
 extern "C" {
 #endif
 
-unsigned char *
+int *
 szp_float_openmp_direct_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
                                              size_t nbEle, int blockSize);
 
-unsigned char *
+int *
 szp_float_openmp_threadblock_predict_quantization(float *oriData, size_t *outSize, float absErrBound,
                                                   size_t nbEle, int blockSize);
 
