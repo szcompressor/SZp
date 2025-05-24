@@ -20,191 +20,58 @@ int versionNumber[4] = {szp_VER_MAJOR,szp_VER_MINOR,szp_VER_BUILD,szp_VER_REVISI
 int dataEndianType = LITTLE_ENDIAN_DATA; //*endian type of the data read from disk
 int sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set automatically.
 
-int computeDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
+unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
+                                      float relBoundRatio, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
 {
-	int dimension;
-	if(r1==0)
-	{
-		dimension = 0;
-	}
-	else if(r2==0)
-	{
-		dimension = 1;
-	}
-	else if(r3==0)
-	{
-		dimension = 2;
-	}
-	else if(r4==0)
-	{
-		dimension = 3;
-	}
-	else if(r5==0)
-	{
-		dimension = 4;
-	}
-	else
-	{
-		dimension = 5;
-	}
-	return dimension;
-}
+    unsigned char *bytes = NULL;
+    size_t length = szp_computeDataLength(r5, r4, r3, r2, r1);
+    size_t i = 0;
+    int blockSize = 128;
+    if (dataType == SZ_FLOAT)
+    {
 
-size_t computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
-{
-	size_t dataLength;
-	if(r1==0)
-	{
-		dataLength = 0;
-	}
-	else if(r2==0)
-	{
-		dataLength = r1;
-	}
-	else if(r3==0)
-	{
-		dataLength = r1*r2;
-	}
-	else if(r4==0)
-	{
-		dataLength = r1*r2*r3;
-	}
-	else if(r5==0)
-	{
-		dataLength = r1*r2*r3*r4;
-	}
-	else
-	{
-		dataLength = r1*r2*r3*r4*r5;
-	}
-	return dataLength;
+        float realPrecision = absErrBound;
+        if (errBoundMode == REL)
+        {
+            float *oriData = (float *)data;
+            float min = oriData[0];
+            float max = oriData[0];
+            for (i = 0; i < length; i++)
+            {
+                float v = oriData[i];
+                if (min > v)
+                    min = v;
+                else if (max < v)
+                    max = v;
+            }
+            float valueRange = max - min;
+            realPrecision = valueRange * relBoundRatio;
+            //printf("REAL ERROR BOUND IS %20f\n", realPrecision);
+            if (fastMode == 1)
+            {
+                bytes = szp_float_openmp_threadblock(oriData, outSize, realPrecision,
+                                                     length, blockSize);
+            }
+            else if (fastMode == 2)
+            {
+                bytes = szp_float_openmp_threadblock_randomaccess(oriData, outSize, realPrecision,
+                                                                  length, blockSize);
+            }
+        }
+        if (fastMode == 1)
+        {
+            bytes = szp_float_openmp_threadblock((float *)data, outSize, realPrecision,
+                                                 length, blockSize);
+        }
+        else if (fastMode == 2)
+        {
+            bytes = szp_float_openmp_threadblock_randomaccess((float *)data, outSize, realPrecision,
+                                                              length, blockSize);
+        }
+    }
+    else
+    {
+        printf("szp only supports float type for now\n");
+    }
+    return bytes;
 }
-
-/**
- * @brief		check dimension and correct it if needed
- * @return 	0 (didn't change dimension)
- * 					1 (dimension is changed)
- * 					2 (dimension is problematic)
- **/
-int filterDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t* correctedDimension)
-{
-	int dimensionCorrected = 0;
-	int dim = computeDimension(r5, r4, r3, r2, r1);
-	correctedDimension[0] = r1;
-	correctedDimension[1] = r2;
-	correctedDimension[2] = r3;
-	correctedDimension[3] = r4;
-	correctedDimension[4] = r5;
-	size_t* c = correctedDimension;
-	if(dim==1)
-	{
-		if(r1<1)
-			return 2;
-	}
-	else if(dim==2)
-	{
-		if(r2==1)
-		{
-			c[1]= 0;
-			dimensionCorrected = 1;
-		}	
-		if(r1==1) //remove this dimension
-		{
-			c[0] = c[1]; 
-			c[1] = c[2];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==3)
-	{
-		if(r3==1)
-		{
-			c[2] = 0;
-			dimensionCorrected = 1;
-		}	
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==4)
-	{
-		if(r4==1)
-		{
-			c[3] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r3==1)
-		{
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==5)
-	{
-		if(r5==1)
-		{
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r4==1)
-		{
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r3==1)
-		{
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-	}
-	
-	return dimensionCorrected;
-	
-}
-

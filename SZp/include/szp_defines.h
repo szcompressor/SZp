@@ -105,4 +105,42 @@ extern int versionNumber[4];
 extern int dataEndianType; //*endian type of the data read from disk
 extern int sysEndianType; //*sysEndianType is actually set automatically.
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+inline size_t szp_computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
+{
+	size_t dataLength;
+	if(r1==0)
+	{
+		dataLength = 0;
+	}
+	else if(r2==0)
+	{
+		dataLength = r1;
+	}
+	else if(r3==0)
+	{
+		dataLength = r1*r2;
+	}
+	else if(r4==0)
+	{
+		dataLength = r1*r2*r3;
+	}
+	else if(r5==0)
+	{
+		dataLength = r1*r2*r3*r4;
+	}
+	else
+	{
+		dataLength = r1*r2*r3*r4*r5;
+	}
+	return dataLength;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* _szp_DEFINES_H */

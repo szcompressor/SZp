@@ -625,7 +625,7 @@ PACKAGE_STRING='szp 1.2'
 PACKAGE_BUGREPORT='sdi1@anl.gov'
 PACKAGE_URL=''
 
-ac_unique_file="SZp/src/szp.cc"
+ac_unique_file="SZp/include/szp.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stddef.h>

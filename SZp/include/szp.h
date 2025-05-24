@@ -28,9 +28,8 @@
 extern "C" {
 #endif
 
-int computeDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
-size_t computeDataLength(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
-int filterDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t* correctedDimension);
+unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
+                                      float relBoundRatio, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1);
 
 #ifdef __cplusplus
 }
