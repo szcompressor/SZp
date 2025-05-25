@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
     char zipFilePath[640], outputFilePath[645];
     if (argc < 2)
     {
-        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size] [err bound]\n");
-        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.SZp 8192 64 1E-3\n");
+        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size]\n");
+        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.SZp 8192 64\n");
         exit(0);
     }
 
@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
 
     sprintf(outputFilePath, "%s.out", zipFilePath);
     int blockSize = atoi(argv[3]);
-    float errBound = atof(argv[4]);
 
     size_t byteLength;
     int status;
@@ -65,9 +64,10 @@ int main(int argc, char *argv[])
     }
 
     cost_start();
-    float *data = NULL;
     // szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
-    szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
+    //szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
+    
+    float* data = (float*)szp_decompress(SZP_RANDOMACCESS, SZ_FLOAT, bytes, byteLength, nbEle, blockSize);
     cost_end();
 
     free(bytes);

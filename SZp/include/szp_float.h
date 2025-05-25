@@ -30,17 +30,17 @@ unsigned char *
 szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
                              size_t nbEle, int blockSize);
 
-void szp_float_openmp_threadblock_arg(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
                                       size_t nbEle, int blockSize);
 
-void szp_float_single_thread_arg(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+void szp_float_single_thread_arg(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
                                  size_t nbEle, int blockSize);
 
-size_t szp_float_single_thread_arg_record(unsigned char *outputBytes, float *oriData, size_t *outSize, float absErrBound,
+size_t szp_float_single_thread_arg_record(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
                                        size_t nbEle, int blockSize);
 
-unsigned char *
-szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float absErrBound,
+void
+szp_float_openmp_threadblock_randomaccess_args(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
                                           size_t nbEle, int blockSize);
 
 #ifdef __cplusplus

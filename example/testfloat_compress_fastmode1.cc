@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   int blockSize = atoi(argv[2]);
   float errBound = atof(argv[3]);
 
-  sprintf(outputFilePath, "%s.SZp", oriFilePath);
+  sprintf(outputFilePath, "%s.szp", oriFilePath);
 
   int status = 0;
   size_t nbEle;
@@ -59,12 +59,11 @@ int main(int argc, char *argv[])
 
   size_t outSize;
   cost_start();
-  unsigned char *bytes = szp_fast_compress_args(SZP_RANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);  
-  //unsigned char *bytes = szp_float_openmp_threadblock_randomaccess(data, &outSize, errBound, nbEle, blockSize);
-  // unsigned char *bytes = szp_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
+  unsigned char *bytes = szp_compress(SZP_RANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);  
+   // unsigned char *bytes = szp_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
-  printf("compression size = %zu, CR = %f\n", outSize, 1.0f * nbEle * sizeof(float) / outSize);
+  printf("compression size = %zu, CR = %f, writing to %s\n", outSize, 1.0f * nbEle * sizeof(float) / outSize, outputFilePath);
   szp_writeByteData(bytes, outSize, outputFilePath, &status);
   if (status != SZ_SCES)
   {

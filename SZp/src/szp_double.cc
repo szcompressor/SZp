@@ -154,9 +154,11 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
     double *op = oriData;
 
     
-    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
+    unsigned char* compressedData = outputBytes+sizeof(double);
+    floatToBytes(outputBytes, absErrBound);
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
@@ -510,7 +512,7 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
         
     }
 
-    
+    (*outSize) += sizeof(double);
     return outputBytes;
 #else
     printf("Error! OpenMP not supported!\n");
@@ -518,7 +520,7 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
 #endif
 }
 
-void szp_double_openmp_threadblock_arg(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
+void szp_double_openmp_threadblock_arg(unsigned char *output, double *oriData, size_t *outSize, double absErrBound,
                                       size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
@@ -526,14 +528,15 @@ void szp_double_openmp_threadblock_arg(unsigned char *outputBytes, double *oriDa
     double *op = oriData;
 
     
-    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
     
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
     
-
+	unsigned char* outputBytes = output + sizeof(double);
+	floatToBytes(output, absErrBound);
 
     (*outSize) = 0;
 
@@ -884,19 +887,21 @@ void szp_double_openmp_threadblock_arg(unsigned char *outputBytes, double *oriDa
        
     }
 
-    
+     (*outSize) += sizeof(double);
 #else
     printf("Error! OpenMP not supported!\n");
 #endif
 }
 
-void szp_double_single_thread_arg(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
+void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t *outSize, double absErrBound,
                                  size_t nbEle, int blockSize)
 {
 
     double *op = oriData;
 
     size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char* outputBytes = output + sizeof(double);
+    floatToBytes(output, absErrBound);
     
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
@@ -1094,9 +1099,11 @@ void szp_double_single_thread_arg(unsigned char *outputBytes, double *oriData, s
     
     free(outSize_perthread_arr);
     free(offsets_perthread_arr);
+    
+    (*outSize) += sizeof(double);    
 }
 
-size_t szp_double_single_thread_arg_record(unsigned char *outputBytes, double *oriData, size_t *outSize, double absErrBound,
+size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriData, size_t *outSize, double absErrBound,
                                        size_t nbEle, int blockSize)
 {
 
@@ -1105,6 +1112,8 @@ size_t szp_double_single_thread_arg_record(unsigned char *outputBytes, double *o
     double *op = oriData;
 
     size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char* outputBytes = output + sizeof(double);
+    floatToBytes(output, absErrBound);
     
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
@@ -1339,21 +1348,26 @@ size_t szp_double_single_thread_arg_record(unsigned char *outputBytes, double *o
     
     free(outSize_perthread_arr);
     free(offsets_perthread_arr);
+    
+    (*outSize) += sizeof(double);
     return total_memaccess;
 }
 
-unsigned char *
-szp_double_openmp_threadblock_randomaccess(double *oriData, size_t *outSize, double absErrBound,
+void 
+szp_double_openmp_threadblock_randomaccess_args(unsigned char* output, double *oriData, size_t *outSize, double absErrBound,
                                           size_t nbEle, int blockSize)
 {
 #ifdef _OPENMP
     
     double *op = oriData;
 
+
+    unsigned char* outputBytes = output + sizeof(double);
+    floatToBytes(output, absErrBound);
     
-    size_t maxPreservedBufferSize = sizeof(double) * nbEle; 
+    size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
-    unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
+
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
@@ -1711,12 +1725,9 @@ szp_double_openmp_threadblock_randomaccess(double *oriData, size_t *outSize, dou
         }
         
     }
-
     
-
-    return outputBytes;
+    (*outSize) += sizeof(double);
 #else
     printf("Error! OpenMP not supported!\n");
-    return NULL;
 #endif
 }

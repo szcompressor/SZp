@@ -788,6 +788,7 @@ void szp_writeByteData(unsigned char *bytes, size_t byteLength, char *tgtFilePat
         return;
     }
     
+    //printf("DEBUG: About to write %zu bytes to %s (bytes=%p)\n", byteLength, tgtFilePath, bytes);
     fwrite(bytes, 1, byteLength, pFile); //write outSize bytes
     fclose(pFile);
     *status = SZ_SCES;

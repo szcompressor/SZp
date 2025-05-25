@@ -22,7 +22,7 @@ int sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set autom
 
 using namespace szp;
 
-unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
+unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
                                       float relBoundRatio, size_t nbEle, int blockSize)
 {
     unsigned char *bytes = NULL;
@@ -55,7 +55,8 @@ unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, si
             }
             else if (fastMode == SZP_RANDOMACCESS)
             {
-                bytes = szp_float_openmp_threadblock_randomaccess(oriData, outSize, realPrecision,
+                bytes = (unsigned char*) malloc(sizeof(float) + sizeof(float)*length);
+                szp_float_openmp_threadblock_randomaccess_args(bytes, oriData, outSize, realPrecision,
                                                                   length, blockSize);
             }
         }
@@ -68,7 +69,8 @@ unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, si
         else if (fastMode == SZP_RANDOMACCESS)
         {
 			float *oriData = (float *)data;
-            bytes = szp_float_openmp_threadblock_randomaccess(oriData, outSize, realPrecision,
+			bytes = (unsigned char*) malloc(sizeof(float) + sizeof(float)*length);
+            szp_float_openmp_threadblock_randomaccess_args(bytes, oriData, outSize, realPrecision,
                                                               length, blockSize);
         }
     }
@@ -99,7 +101,8 @@ unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, si
             }
             else if (fastMode == SZP_RANDOMACCESS)
             {
-                bytes = szp_double_openmp_threadblock_randomaccess(oriData, outSize, realPrecision,
+                bytes =  (unsigned char*)malloc(sizeof(double) + sizeof(double)*length);
+                szp_double_openmp_threadblock_randomaccess_args(bytes, oriData, outSize, realPrecision,
                                                                   length, blockSize);
             }
         }
@@ -112,9 +115,37 @@ unsigned char *szp_fast_compress_args(int fastMode, int dataType, void *data, si
         else if (fastMode == SZP_RANDOMACCESS)
         {
 			double *oriData = (double *)data;
-            bytes = szp_double_openmp_threadblock_randomaccess(oriData, outSize, realPrecision,
+            bytes = (unsigned char*)malloc(sizeof(double) + sizeof(double)*length);
+            szp_double_openmp_threadblock_randomaccess_args(bytes, oriData, outSize, realPrecision,
                                                               length, blockSize);
         }        
     }
     return bytes;
+}
+
+void* szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t byteLength, size_t nbEle, int blockSize)
+{
+    int x = 1;
+    char *y = (char*)&x;
+    if(*y==1)
+        sysEndianType = LITTLE_ENDIAN_SYSTEM;
+    else //=0
+        sysEndianType = BIG_ENDIAN_SYSTEM;
+
+    if(dataType == SZ_FLOAT)
+    {
+		float* decompressedData = (float*)malloc(nbEle*sizeof(float));
+		float absErrBound = bytesToFloat(bytes);
+		unsigned char* cmpBytes = bytes + sizeof(float);
+		szp_float_decompress_openmp_threadblock_randomaccess_args(&decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+		return decompressedData;
+	}
+	else //SZ_DOUBLE
+	{
+		double* decompressedData = (double*)malloc(nbEle*sizeof(double));
+		double absErrBound = bytesToDouble(bytes);
+		unsigned char* cmpBytes = bytes + sizeof(double);
+		szp_double_decompress_openmp_threadblock_randomaccess_args(&decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+		return decompressedData;
+	}
 }

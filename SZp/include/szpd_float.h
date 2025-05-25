@@ -26,7 +26,7 @@ void szp_float_decompress_single_thread_arg(float *newData, size_t nbEle, float 
 
 size_t szp_float_decompress_single_thread_arg_record(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes);
 
-void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes);
+void szp_float_decompress_openmp_threadblock_randomaccess_args(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes);
 
 #ifdef __cplusplus
 }

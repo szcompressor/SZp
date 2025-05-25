@@ -831,7 +831,7 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
 #endif
 }
 
-void szp_float_decompress_openmp_threadblock_randomaccess(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_float_decompress_openmp_threadblock_randomaccess_args(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
     *newData = (float *)malloc(sizeof(float) * nbEle);
