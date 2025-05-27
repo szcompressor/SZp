@@ -15,10 +15,10 @@
 #include "szp.h"
 #include "szp_rw.h"
 
-int versionNumber[4] = {szp_VER_MAJOR,szp_VER_MINOR,szp_VER_BUILD,szp_VER_REVISION};
+int szp_versionNumber[4] = {szp_VER_MAJOR,szp_VER_MINOR,szp_VER_BUILD,szp_VER_REVISION};
 
-int dataEndianType = LITTLE_ENDIAN_DATA; //*endian type of the data read from disk
-int sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set automatically.
+int szp_dataEndianType = LITTLE_ENDIAN_DATA; //*endian type of the data read from disk
+int szp_sysEndianType = LITTLE_ENDIAN_SYSTEM; //*sysEndianType is actually set automatically.
 
 using namespace szp;
 
@@ -128,9 +128,9 @@ void* szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t by
     int x = 1;
     char *y = (char*)&x;
     if(*y==1)
-        sysEndianType = LITTLE_ENDIAN_SYSTEM;
+        szp_sysEndianType = LITTLE_ENDIAN_SYSTEM;
     else //=0
-        sysEndianType = BIG_ENDIAN_SYSTEM;
+        szp_sysEndianType = BIG_ENDIAN_SYSTEM;
 
     if(dataType == SZ_FLOAT)
     {

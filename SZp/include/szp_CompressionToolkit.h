@@ -281,7 +281,7 @@ inline void intToBytes_bigEndian(unsigned char *b, unsigned int num)
 	b[3] = (unsigned char)(num);	
 	
 	//note: num >> xxx already considered endian_type...
-//if(dataEndianType==LITTLE_ENDIAN_DATA)
+//if(szp_dataEndianType==LITTLE_ENDIAN_DATA)
 //		symTransform_4bytes(*b); //change to BIG_ENDIAN_DATA
 }
 
@@ -363,21 +363,21 @@ inline void longToBytes_bigEndian(unsigned char *b, unsigned long num)
 	b[5] = (unsigned char)(num>>16);
 	b[6] = (unsigned char)(num>>8);
 	b[7] = (unsigned char)(num);
-//	if(dataEndianType==LITTLE_ENDIAN_DATA)
+//	if(szp_dataEndianType==LITTLE_ENDIAN_DATA)
 //		symTransform_8bytes(*b);
 }
 
 
 inline long doubleToOSEndianLong(double value)
 {
-	ldouble buf;
+	szp_ldouble buf;
 	buf.value = value;
 	return buf.lvalue;
 }
 
 inline int floatToOSEndianInt(float value)
 {
-	lfloat buf;
+	szp_lfloat buf;
 	buf.value = value;
 	return buf.ivalue;
 }
@@ -387,7 +387,7 @@ inline short getExponent_float(float value)
 {
 	//int ivalue = floatToBigEndianInt(value);
 
-	lfloat lbuf;
+	szp_lfloat lbuf;
 	lbuf.value = value;
 	int ivalue = lbuf.ivalue;
 	
@@ -398,7 +398,7 @@ inline short getExponent_float(float value)
 
 inline short getPrecisionReqLength_float(float precision)
 {
-	lfloat lbuf;
+	szp_lfloat lbuf;
 	lbuf.value = precision;
 	int ivalue = lbuf.ivalue;
 	
@@ -414,7 +414,7 @@ inline short getExponent_double(double value)
 {
 	//long lvalue = doubleToBigEndianLong(value);
 	
-	ldouble lbuf;
+	szp_ldouble lbuf;
 	lbuf.value = value;
 	long lvalue = lbuf.lvalue;
 	
@@ -425,7 +425,7 @@ inline short getExponent_double(double value)
 
 inline short getPrecisionReqLength_double(double precision)
 {
-	ldouble lbuf;
+	szp_ldouble lbuf;
 	lbuf.value = precision;
 	long lvalue = lbuf.lvalue;
 	
@@ -480,7 +480,7 @@ inline unsigned char getLeadingNumbers_Long(long v1, long v2)
  * */
 inline short bytesToShort(unsigned char* bytes)
 {
-	lint16 buf;
+	szp_lint16 buf;
 	memcpy(buf.byte, bytes, 2);
 	
 	return buf.svalue;
@@ -488,21 +488,21 @@ inline short bytesToShort(unsigned char* bytes)
 
 inline void shortToBytes(unsigned char* b, short value)
 {
-	lint16 buf;
+	szp_lint16 buf;
 	buf.svalue = value;
 	memcpy(b, buf.byte, 2);
 }
 
 inline int bytesToInt(unsigned char* bytes)
 {
-	lfloat buf;
+	szp_lfloat buf;
 	memcpy(buf.byte, bytes, 4);
 	return buf.ivalue;
 }
 
 inline long bytesToLong(unsigned char* bytes)
 {
-	ldouble buf;
+	szp_ldouble buf;
 	memcpy(buf.byte, bytes, 8);
 	return buf.lvalue;
 }
@@ -510,38 +510,38 @@ inline long bytesToLong(unsigned char* bytes)
 //the byte to input is in the big-endian format
 inline float bytesToFloat(unsigned char* bytes)
 {
-	lfloat buf;
+	szp_lfloat buf;
 	memcpy(buf.byte, bytes, 4);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+	if(szp_sysEndianType==LITTLE_ENDIAN_SYSTEM)
 		symTransform_4bytes(buf.byte);	
 	return buf.value;
 }
 
 inline void floatToBytes(unsigned char *b, float num)
 {
-	lfloat buf;
+	szp_lfloat buf;
 	buf.value = num;
 	memcpy(b, buf.byte, 4);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+	if(szp_sysEndianType==LITTLE_ENDIAN_SYSTEM)
 		symTransform_4bytes(b);		
 }
 
 //the byte to input is in the big-endian format
 inline double bytesToDouble(unsigned char* bytes)
 {
-	ldouble buf;
+	szp_ldouble buf;
 	memcpy(buf.byte, bytes, 8);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+	if(szp_sysEndianType==LITTLE_ENDIAN_SYSTEM)
 		symTransform_8bytes(buf.byte);
 	return buf.value;
 }
 
 inline void doubleToBytes(unsigned char *b, double num)
 {
-	ldouble buf;
+	szp_ldouble buf;
 	buf.value = num;
 	memcpy(b, buf.byte, 8);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+	if(szp_sysEndianType==LITTLE_ENDIAN_SYSTEM)
 		symTransform_8bytes(b);
 }
 

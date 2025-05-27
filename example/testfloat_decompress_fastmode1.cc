@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size]\n");
-        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.SZp 8192 64\n");
+        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.szp 8192 64\n");
         exit(0);
     }
 

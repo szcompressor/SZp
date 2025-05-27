@@ -64,47 +64,47 @@
 #define SZ_MERR -5 //sz_mode error
 #define SZ_BERR -6 //bound-mode error (should be only ABS, REL, ABS_AND_REL, ABS_OR_REL, or PW_REL)
 
-typedef union lint16
+typedef union szp_lint16
 {
 	unsigned short usvalue;
 	short svalue;
 	unsigned char byte[2];
-} lint16;
+} szp_lint16;
 
-typedef union lint32
+typedef union szp_lint32
 {
 	int ivalue;
 	unsigned int uivalue;
 	unsigned char byte[4];
-} lint32;
+} szp_lint32;
 
-typedef union lint64
+typedef union szp_lint64
 {
 	long lvalue;
 	unsigned long ulvalue;
 	unsigned char byte[8];
-} lint64;
+} szp_lint64;
 
-typedef union ldouble
+typedef union szp_ldouble
 {
     double value;
     unsigned long lvalue;
     unsigned char byte[8];
-} ldouble;
+} szp_ldouble;
 
-typedef union lfloat
+typedef union szp_lfloat
 {
     float value;
     unsigned int ivalue;
     unsigned char byte[4];
-} lfloat;
+} szp_lfloat;
 
 
-extern int versionNumber[4];
+extern int szp_versionNumber[4];
 
 //-------------------key global variables--------------
-extern int dataEndianType; //*endian type of the data read from disk
-extern int sysEndianType; //*sysEndianType is actually set automatically.
+extern int szp_dataEndianType; //*endian type of the data read from disk
+extern int szp_sysEndianType; //*sysEndianType is actually set automatically.
 
 #ifdef __cplusplus
 extern "C" {

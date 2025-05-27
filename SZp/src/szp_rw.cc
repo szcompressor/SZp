@@ -163,7 +163,7 @@ unsigned char *szp_readByteData(char *srcFilePath, size_t *byteLength, int *stat
 double *szp_readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		double *daBuf = szp_readDoubleData_systemEndian(srcFilePath, nbEle,&state);
 		*status = state;
@@ -183,7 +183,7 @@ double *szp_readDoubleData(char *srcFilePath, size_t *nbEle, int *status)
 		double *daBuf = (double *)malloc(byteLength);
 		*nbEle = byteLength/8;
 		
-		ldouble buf;
+		szp_ldouble buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i*8;
@@ -208,7 +208,7 @@ int8_t *szp_readInt8Data(char *srcFilePath, size_t *nbEle, int *status)
 int16_t *szp_readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		int16_t *daBuf = szp_readInt16Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -228,7 +228,7 @@ int16_t *szp_readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 		int16_t *daBuf = (int16_t *)malloc(byteLength);
 		*nbEle = byteLength/2;
 
-		lint16 buf;
+		szp_lint16 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i << 1;//*2
@@ -244,7 +244,7 @@ int16_t *szp_readInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 uint16_t *szp_readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		uint16_t *daBuf = szp_readUInt16Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -264,7 +264,7 @@ uint16_t *szp_readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 		uint16_t *daBuf = (uint16_t *)malloc(byteLength);
 		*nbEle = byteLength/2;
 
-		lint16 buf;
+		szp_lint16 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i << 1;//*2
@@ -280,7 +280,7 @@ uint16_t *szp_readUInt16Data(char *srcFilePath, size_t *nbEle, int *status)
 int32_t *szp_readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		int32_t *daBuf = szp_readInt32Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -300,7 +300,7 @@ int32_t *szp_readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 		int32_t *daBuf = (int32_t *)malloc(byteLength);
 		*nbEle = byteLength/4;
 
-		lint32 buf;
+		szp_lint32 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i*4;
@@ -316,7 +316,7 @@ int32_t *szp_readInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 uint32_t *szp_readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		uint32_t *daBuf = szp_readUInt32Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -336,7 +336,7 @@ uint32_t *szp_readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 		uint32_t *daBuf = (uint32_t *)malloc(byteLength);
 		*nbEle = byteLength/4;
 
-		lint32 buf;
+		szp_lint32 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i << 2; //*4
@@ -352,7 +352,7 @@ uint32_t *szp_readUInt32Data(char *srcFilePath, size_t *nbEle, int *status)
 int64_t *szp_readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		int64_t *daBuf = szp_readInt64Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -372,7 +372,7 @@ int64_t *szp_readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 		int64_t *daBuf = (int64_t *)malloc(byteLength);
 		*nbEle = byteLength/8;
 
-		lint64 buf;
+		szp_lint64 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i << 3; //*8
@@ -388,7 +388,7 @@ int64_t *szp_readInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 uint64_t *szp_readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		uint64_t *daBuf = szp_readUInt64Data_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -408,7 +408,7 @@ uint64_t *szp_readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 		uint64_t *daBuf = (uint64_t *)malloc(byteLength);
 		*nbEle = byteLength/8;
 
-		lint64 buf;
+		szp_lint64 buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i << 3; //*8
@@ -425,7 +425,7 @@ uint64_t *szp_readUInt64Data(char *srcFilePath, size_t *nbEle, int *status)
 float *szp_readFloatData(char *srcFilePath, size_t *nbEle, int *status)
 {
 	int state = SZ_SCES;
-	if(dataEndianType==sysEndianType)
+	if(szp_dataEndianType==szp_sysEndianType)
 	{
 		float *daBuf = szp_readFloatData_systemEndian(srcFilePath, nbEle, &state);
 		*status = state;
@@ -445,7 +445,7 @@ float *szp_readFloatData(char *srcFilePath, size_t *nbEle, int *status)
 		float *daBuf = (float *)malloc(byteLength);
 		*nbEle = byteLength/4;
 		
-		lfloat buf;
+		szp_lfloat buf;
 		for(i = 0;i<*nbEle;i++)
 		{
 			j = i*4;
@@ -866,7 +866,7 @@ void szp_writeFloatData_inBytes(float *data, size_t nbEle, char* tgtFilePath, in
 {
 	size_t i = 0; 
 	int state = SZ_SCES;
-	lfloat buf;
+	szp_lfloat buf;
 	unsigned char* bytes = (unsigned char*)malloc(nbEle*sizeof(float));
 	for(i=0;i<nbEle;i++)
 	{
@@ -887,7 +887,7 @@ void szp_writeDoubleData_inBytes(double *data, size_t nbEle, char* tgtFilePath, 
 {
 	size_t i = 0, index = 0; 
 	int state = SZ_SCES;
-	ldouble buf;
+	szp_ldouble buf;
 	unsigned char* bytes = (unsigned char*)malloc(nbEle*sizeof(double));
 	for(i=0;i<nbEle;i++)
 	{
