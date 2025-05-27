@@ -47,7 +47,7 @@ target_link_libraries(SZp PUBLIC PkgConfig::ZSTD OpenMP::OpenMP_CXX)
 target_include_directories(SZp
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SZp/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}/SZp>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SZp>
 )
 
 
