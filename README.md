@@ -1,7 +1,7 @@
 # SZp (Also known as fZ-light)
 
 * Developers: Jiajun Huang(kernels, entries, and examples), Sheng Di (utility)
-* Email: jhuan380@ucr.edu
+* Email: jiajunhuang@usf.edu
 
 This is the official repository of SZp, an extreme-fast error-bounded lossy compressor. It is a CPU compressor (supporting OpenMP). 
 The design and optimizations of SZp are published under the name fZ-light in SC '24.
