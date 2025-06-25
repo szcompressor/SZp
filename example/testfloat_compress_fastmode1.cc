@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
   size_t outSize;
   cost_start();
-  unsigned char *bytes = szp_compress(SZP_RANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);  
+  unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);  
    // unsigned char *bytes = szp_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
