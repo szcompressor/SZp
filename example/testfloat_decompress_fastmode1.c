@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 
     cost_start();
     float *data = NULL;
-    // szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
-    szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
+    szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
+    // szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
     cost_end();
 
     free(bytes);
