@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     // szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
     //szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
     
-    float* data = (float*)szp_decompress(SZP_RANDOMACCESS, SZ_FLOAT, bytes, byteLength, nbEle, blockSize);
+    float* data = (float*)szp_decompress(SZP_NONRANDOMACCESS, SZ_FLOAT, bytes, byteLength, nbEle, blockSize);
     cost_end();
 
     free(bytes);
