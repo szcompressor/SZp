@@ -25,6 +25,12 @@ make install
 
 ```
 
+## Run SZp
+```bash
+# Set OMP_NUM_THREADS to a multiple of 8
+export OMP_NUM_THREADS=$NUMTHREADS
+```
+
 ## Citation
 
 If you find SZp useful in your research or applications, we kindly invite you to cite our paper. Your support helps advance the field and acknowledges the contributions of our work. Thank you!
