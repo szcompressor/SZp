@@ -33,37 +33,55 @@ void cost_end()
 int main(int argc, char *argv[])
 {
   char oriFilePath[640], outputFilePath[645];
-  if (argc < 3)
+  if (argc < 4)
   {
-    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound]\n");
-    printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3\n");
+    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [data_type]\n");
+    printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3 float\n");
     exit(0);
   }
 
   sprintf(oriFilePath, "%s", argv[1]);
   int blockSize = atoi(argv[2]);
-  float errBound = atof(argv[3]);
-
+  double errBound = atof(argv[3]);
+  char* dataType = argv[4];
+  int sz_dataType = SZ_FLOAT;
+  if (strcmp(dataType, "float") != 0 && strcmp(dataType, "double") != 0)
+  {
+    printf("Error: data type must be 'float' or 'double'!\n");
+    exit(0);
+  }
+  if (strcmp(dataType, "double") == 0)
+  {
+    sz_dataType = SZ_DOUBLE;
+  }
+  
   sprintf(outputFilePath, "%s.szp", oriFilePath);
 
   int status = 0;
   size_t nbEle;
-  float *data = szp_readFloatData(oriFilePath, &nbEle, &status);
+  void *data;
+  if (sz_dataType == SZ_FLOAT)
+  {
+    data = szp_readFloatData(oriFilePath, &nbEle, &status);
+  }
+  else // SZ_DOUBLE
+  {
+    data = szp_readDoubleData(oriFilePath, &nbEle, &status);
+  }
   if (status != SZ_SCES)
   {
     printf("Error: data file %s cannot be read!\n", oriFilePath);
     exit(0);
   }
-  // float *revValue = (float *)malloc(sizeof(float));
-  //*revValue = 1.0E36;
+
 
   size_t outSize;
   cost_start();
-  unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);  
-   // unsigned char *bytes = szp_float_openmp_threadblock(data, &outSize, errBound, nbEle, blockSize);
+  unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
+  // unsigned char *bytes = szp_compress(SZP_RANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
-  printf("compression size = %zu, CR = %f, writing to %s\n", outSize, 1.0f * nbEle * sizeof(float) / outSize, outputFilePath);
+  printf("compression size = %zu, CR = %f, writing to %s\n", outSize, 1.0f * nbEle * ((sz_dataType == SZ_FLOAT) ? sizeof(float) : sizeof(double))/ outSize, outputFilePath);
   szp_writeByteData(bytes, outSize, outputFilePath, &status);
   if (status != SZ_SCES)
   {

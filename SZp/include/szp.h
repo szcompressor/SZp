@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, float absErrBound,
-                                      float relBoundRatio, size_t nbEle, int blockSize);
+unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, double absErrBound,
+                                      double relBoundRatio, size_t nbEle, int blockSize);
                                       
 void* szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t byteLength, size_t nbEle, int blockSize);
 
