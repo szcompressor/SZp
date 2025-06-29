@@ -831,10 +831,10 @@ void szp_float_decompress_openmp_threadblock_arg(float *newData, size_t nbEle, f
 #endif
 }
 
-void szp_float_decompress_openmp_threadblock_randomaccess_args(float **newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
+void szp_float_decompress_openmp_threadblock_randomaccess_arg(float *newData, size_t nbEle, float absErrBound, int blockSize, unsigned char *cmpBytes)
 {
 #ifdef _OPENMP
-    *newData = (float *)malloc(sizeof(float) * nbEle);
+    // *newData = (float *)malloc(sizeof(float) * nbEle);
     size_t *offsets = (size_t *)cmpBytes;
     unsigned char *rcp;
     unsigned int nbThreads = 0;
@@ -859,7 +859,7 @@ void szp_float_decompress_openmp_threadblock_randomaccess_args(float **newData, 
         int tid = omp_get_thread_num();
         int lo = tid * threadblocksize;
         int hi = (tid + 1) * threadblocksize;
-        float *newData_perthread = *newData + lo;
+        float *newData_perthread = newData + lo;
         size_t i = 0;
         size_t j = 0;
         size_t k = 0;

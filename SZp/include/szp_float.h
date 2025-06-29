@@ -40,7 +40,7 @@ size_t szp_float_single_thread_arg_record(unsigned char *output, float *oriData,
                                        size_t nbEle, int blockSize);
 
 void
-szp_float_openmp_threadblock_randomaccess_args(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
+szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriData, size_t *outSize, float absErrBound,
                                           size_t nbEle, int blockSize);
 
 #ifdef __cplusplus

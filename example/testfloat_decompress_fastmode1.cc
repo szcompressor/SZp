@@ -12,6 +12,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include "szp.h"
+#include <sys/time.h>
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -35,24 +36,33 @@ void cost_end()
     elapsed = ((costEnd.tv_sec * 1000000 + costEnd.tv_usec) - (costStart.tv_sec * 1000000 + costStart.tv_usec)) / 1000000.0;
     totalCost += elapsed;
 }
-
 int main(int argc, char *argv[])
 {
     size_t nbEle, totalNbEle;
     char zipFilePath[640], outputFilePath[645];
-    if (argc < 2)
+    if (argc < 5) // Corrected argument count check
     {
-        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size]\n");
-        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.szp 8192 64\n");
+        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size] [data_type]\n");
+        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.szp 8192 64 float\n");
         exit(0);
     }
 
     sprintf(zipFilePath, "%s", argv[1]);
-    //    nbEle = atoi(argv[2]);
     nbEle = strtoimax(argv[2], NULL, 10);
+    int blockSize = atoi(argv[3]);
+    char* dataType = argv[4];
+    int sz_dataType = SZ_FLOAT;
+    if (strcmp(dataType, "float") != 0 && strcmp(dataType, "double") != 0)
+    {
+        printf("Error: data type must be 'float' or 'double'!\n");
+        exit(0);
+    }
+    if (strcmp(dataType, "double") == 0)
+    {
+        sz_dataType = SZ_DOUBLE;
+    }
 
     sprintf(outputFilePath, "%s.out", zipFilePath);
-    int blockSize = atoi(argv[3]);
 
     size_t byteLength;
     int status;
@@ -64,15 +74,23 @@ int main(int argc, char *argv[])
     }
 
     cost_start();
-    // szp_float_decompress_openmp_threadblock(&data, nbEle, errBound, blockSize, bytes);
-    //szp_float_decompress_openmp_threadblock_randomaccess(&data, nbEle, errBound, blockSize, bytes);
-    
-    float* data = (float*)szp_decompress(SZP_NONRANDOMACCESS, SZ_FLOAT, bytes, byteLength, nbEle, blockSize);
-    cost_end();
 
+    void *data = szp_decompress(SZP_NONRANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
+    cost_end();
+    
     free(bytes);
     printf("timecost=%f\n", totalCost);
-    szp_writeFloatData_inBytes(data, nbEle, outputFilePath, &status);
+
+    // Write the decompressed data to the output file
+    if (sz_dataType == SZ_FLOAT)
+    {
+        szp_writeFloatData_inBytes((float*)data, nbEle, outputFilePath, &status);
+    }
+    else // SZ_DOUBLE
+    {
+        szp_writeDoubleData_inBytes((double*)data, nbEle, outputFilePath, &status);
+    }
+
     if (status != SZ_SCES)
     {
         printf("Error: %s cannot be written!\n", outputFilePath);
@@ -83,80 +101,151 @@ int main(int argc, char *argv[])
     char oriFilePath[645];
     strcpy(oriFilePath, zipFilePath);
     oriFilePath[strlen(zipFilePath) - 4] = '\0';
-    float *ori_data = szp_readFloatData(oriFilePath, &totalNbEle, &status);
+    
+    void* ori_data = NULL;
+    if (sz_dataType == SZ_FLOAT)
+    {
+        ori_data = szp_readFloatData(oriFilePath, &totalNbEle, &status);
+    }
+    else // SZ_DOUBLE
+    {
+        ori_data = szp_readDoubleData(oriFilePath, &totalNbEle, &status);
+    }
+    
     if (status != SZ_SCES)
     {
         printf("Error: %s cannot be read!\n", oriFilePath);
+        free(data); // Free allocated memory before exiting
         exit(0);
     }
 
-    size_t i = 0;
-    float Max = 0, Min = 0, diffMax = 0;
-    Max = ori_data[0];
-    Min = ori_data[0];
-    diffMax = fabs(data[0] - ori_data[0]);
-    double sum1 = 0, sum2 = 0;
-    for (i = 0; i < nbEle; i++)
+    if (sz_dataType == SZ_FLOAT)
     {
-        sum1 += ori_data[i];
-        sum2 += data[i];
-    }
-    double mean1 = sum1 / nbEle;
-    double mean2 = sum2 / nbEle;
+        float* ori_data_f = (float*)ori_data;
+        float* data_f = (float*)data;
+        size_t i = 0;
+        double Max = 0, Min = 0, diffMax = 0; // Use double for precision in calculations
 
-    double sum3 = 0, sum4 = 0;
-    double sum = 0, prodSum = 0, relerr = 0;
-
-    double maxpw_relerr = 0;
-    for (i = 0; i < nbEle; i++)
-    {
-        if (Max < ori_data[i])
-            Max = ori_data[i];
-        if (Min > ori_data[i])
-            Min = ori_data[i];
-
-        float err = fabs(data[i] - ori_data[i]);
-        if (ori_data[i] != 0)
-        {
-            if (fabs(ori_data[i]) > 1)
-                relerr = err / ori_data[i];
-            else
-                relerr = err;
-            if (maxpw_relerr < relerr)
-                maxpw_relerr = relerr;
+        if (nbEle > 0) {
+            Max = ori_data_f[0];
+            Min = ori_data_f[0];
+            diffMax = fabs(data_f[0] - ori_data_f[0]);
         }
 
-        /*if(err > 1600000)
+        double sum1 = 0, sum2 = 0;
+        for (i = 0; i < nbEle; i++)
         {
-            printf("i=%zu, ori=%f, dec=%f, diff=%f\n", i, ori_data[i], data[i], err);
-            exit(0);
-        }*/
-        if (diffMax < err)
-            diffMax = err;
-        prodSum += (ori_data[i] - mean1) * (data[i] - mean2);
-        sum3 += (ori_data[i] - mean1) * (ori_data[i] - mean1);
-        sum4 += (data[i] - mean2) * (data[i] - mean2);
-        sum += err * err;
+            sum1 += ori_data_f[i];
+            sum2 += data_f[i];
+        }
+        double mean1 = (nbEle == 0) ? 0 : sum1 / nbEle;
+        double mean2 = (nbEle == 0) ? 0 : sum2 / nbEle;
+
+        double sum3 = 0, sum4 = 0;
+        double sum = 0, prodSum = 0;
+        double maxpw_relerr = 0;
+        for (i = 0; i < nbEle; i++)
+        {
+            if (Max < ori_data_f[i]) Max = ori_data_f[i];
+            if (Min > ori_data_f[i]) Min = ori_data_f[i];
+
+            double err = fabs(data_f[i] - ori_data_f[i]);
+            if (ori_data_f[i] != 0)
+            {
+                double relerr = err / fabs(ori_data_f[i]);
+                if (maxpw_relerr < relerr)
+                    maxpw_relerr = relerr;
+            }
+            if (diffMax < err) diffMax = err;
+
+            prodSum += (ori_data_f[i] - mean1) * (data_f[i] - mean2);
+            sum3 += (ori_data_f[i] - mean1) * (ori_data_f[i] - mean1);
+            sum4 += (data_f[i] - mean2) * (data_f[i] - mean2);
+            sum += err * err;
+        }
+
+        double std1 = (nbEle == 0) ? 0 : sqrt(sum3 / nbEle);
+        double std2 = (nbEle == 0) ? 0 : sqrt(sum4 / nbEle);
+        double ee = (nbEle == 0) ? 0 : prodSum / nbEle;
+        double acEff = (std1 * std2 == 0) ? 0 : ee / (std1 * std2);
+        double mse = (nbEle == 0) ? 0 : sum / nbEle;
+        double range = Max - Min;
+        double psnr = (mse == 0) ? 999 : 20 * log10(range) - 10 * log10(mse);
+        double nrmse = (range == 0) ? 0 : sqrt(mse) / range;
+        double compressionRatio = 1.0 * nbEle * sizeof(float) / byteLength;
+
+        printf("Min=%.20G, Max=%.20G, range=%.20G\n", Min, Max, range);
+        printf("Max absolute error = %.10f\n", diffMax);
+        printf("Max relative error = %f\n", (range == 0) ? 0 : diffMax / range);
+        printf("Max pw relative error = %f\n", maxpw_relerr);
+        printf("PSNR = %f, NRMSE= %.20G\n", psnr, nrmse);
+        printf("acEff=%f\n", acEff);
+        printf("compressionRatio = %f\n", compressionRatio);
     }
-    double std1 = sqrt(sum3 / nbEle);
-    double std2 = sqrt(sum4 / nbEle);
-    double ee = prodSum / nbEle;
-    double acEff = ee / std1 / std2;
+    else // SZ_DOUBLE
+    {
+        double* ori_data_d = (double*)ori_data;
+        double* data_d = (double*)data;
+        size_t i = 0;
+        double Max = 0, Min = 0, diffMax = 0;
+        
+        if (nbEle > 0) {
+            Max = ori_data_d[0];
+            Min = ori_data_d[0];
+            diffMax = fabs(data_d[0] - ori_data_d[0]);
+        }
 
-    double mse = sum / nbEle;
-    double range = Max - Min;
-    double psnr = 20 * log10(range) - 10 * log10(mse);
-    double nrmse = sqrt(mse) / range;
+        double sum1 = 0, sum2 = 0;
+        for (i = 0; i < nbEle; i++)
+        {
+            sum1 += ori_data_d[i];
+            sum2 += data_d[i];
+        }
+        double mean1 = (nbEle == 0) ? 0 : sum1 / nbEle;
+        double mean2 = (nbEle == 0) ? 0 : sum2 / nbEle;
 
-    double compressionRatio = 1.0 * nbEle * sizeof(float) / byteLength;
+        double sum3 = 0, sum4 = 0;
+        double sum = 0, prodSum = 0;
+        double maxpw_relerr = 0;
+        for (i = 0; i < nbEle; i++)
+        {
+            if (Max < ori_data_d[i]) Max = ori_data_d[i];
+            if (Min > ori_data_d[i]) Min = ori_data_d[i];
+            
+            double err = fabs(data_d[i] - ori_data_d[i]);
+            if (ori_data_d[i] != 0)
+            {
+                double relerr = err / fabs(ori_data_d[i]);
+                if (maxpw_relerr < relerr)
+                    maxpw_relerr = relerr;
+            }
+            if (diffMax < err) diffMax = err;
 
-    printf("Min=%.20G, Max=%.20G, range=%.20G\n", Min, Max, range);
-    printf("Max absolute error = %.10f\n", diffMax);
-    printf("Max relative error = %f\n", diffMax / (Max - Min));
-    printf("Max pw relative error = %f\n", maxpw_relerr);
-    printf("PSNR = %f, NRMSE= %.20G\n", psnr, nrmse);
-    printf("acEff=%f\n", acEff);
-    printf("compressionRatio = %f\n", compressionRatio);
+            prodSum += (ori_data_d[i] - mean1) * (data_d[i] - mean2);
+            sum3 += (ori_data_d[i] - mean1) * (ori_data_d[i] - mean1);
+            sum4 += (data_d[i] - mean2) * (data_d[i] - mean2);
+            sum += err * err;
+        }
+
+        double std1 = (nbEle == 0) ? 0 : sqrt(sum3 / nbEle);
+        double std2 = (nbEle == 0) ? 0 : sqrt(sum4 / nbEle);
+        double ee = (nbEle == 0) ? 0 : prodSum / nbEle;
+        double acEff = (std1 * std2 == 0) ? 0 : ee / (std1 * std2);
+        double mse = (nbEle == 0) ? 0 : sum / nbEle;
+        double range = Max - Min;
+        double psnr = (mse == 0) ? 999 : 20 * log10(range) - 10 * log10(mse);
+        double nrmse = (range == 0) ? 0 : sqrt(mse) / range;
+        double compressionRatio = 1.0 * nbEle * sizeof(double) / byteLength;
+
+        printf("Min=%.20G, Max=%.20G, range=%.20G\n", Min, Max, range);
+        printf("Max absolute error = %.10f\n", diffMax);
+        printf("Max relative error = %f\n", (range == 0) ? 0 : diffMax / range);
+        printf("Max pw relative error = %f\n", maxpw_relerr);
+        printf("PSNR = %f, NRMSE= %.20G\n", psnr, nrmse);
+        printf("acEff=%f\n", acEff);
+        printf("compressionRatio = %f\n", compressionRatio);
+    }
+
     free(data);
     free(ori_data);
     return 0;
