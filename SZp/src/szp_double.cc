@@ -158,7 +158,7 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
     unsigned char* compressedData = outputBytes+sizeof(double);
-    floatToBytes(outputBytes, absErrBound);
+    doubleToBytes(outputBytes, absErrBound);
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
@@ -536,7 +536,7 @@ void szp_double_openmp_threadblock_arg(unsigned char *output, double *oriData, s
     size_t *offsets_perthread_arr;
     
 	unsigned char* outputBytes = output + sizeof(double);
-	floatToBytes(output, absErrBound);
+	doubleToBytes(output, absErrBound);
 
     (*outSize) = 0;
 
@@ -901,7 +901,7 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char* outputBytes = output + sizeof(double);
-    floatToBytes(output, absErrBound);
+    doubleToBytes(output, absErrBound);
     
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
@@ -1113,7 +1113,7 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
 
     size_t maxPreservedBufferSize_perthread = 0;
     unsigned char* outputBytes = output + sizeof(double);
-    floatToBytes(output, absErrBound);
+    doubleToBytes(output, absErrBound);
     
     unsigned char *real_outputBytes; 
     size_t *outSize_perthread_arr;
@@ -1363,7 +1363,7 @@ szp_double_openmp_threadblock_randomaccess_arg(unsigned char* output, double *or
 
 
     unsigned char* outputBytes = output + sizeof(double);
-    floatToBytes(output, absErrBound);
+    doubleToBytes(output, absErrBound);
     
     size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
