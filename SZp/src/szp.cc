@@ -54,6 +54,10 @@ unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outS
             bytes = (unsigned char *)malloc(sizeof(float) + sizeof(float) * length);
             szp_float_openmp_threadblock_arg(bytes, oriData, outSize, realPrecision,
                                              length, blockSize);
+
+            // --- NON _arg version ---
+            // bytes = szp_float_openmp_threadblock(oriData, outSize, realPrecision, length, blockSize);
+            // --- NON _arg version ---
         }
         else if (fastMode == SZP_RANDOMACCESS)
         {
@@ -111,31 +115,41 @@ void *szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t by
 
     if (dataType == SZ_FLOAT)
     {
-        float *decompressedData = (float *)malloc(nbEle * sizeof(float));
+        
         float absErrBound = bytesToFloat(bytes);
         unsigned char *cmpBytes = bytes + sizeof(float);
+        float *decompressedData = NULL;
         if (fastMode == SZP_NONRANDOMACCESS)
         {
+            decompressedData = (float *)malloc(nbEle * sizeof(float));
             szp_float_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+
+            // --- NON _arg version ---
+            // decompressedData = szp_float_decompress_openmp_threadblock(nbEle, absErrBound, blockSize, cmpBytes);
+            // --- NON _arg version ---
         }
         else // SZP_RANDOMACCESS
         {
+            decompressedData = (float *)malloc(nbEle * sizeof(float));
             szp_float_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+
         }
         return decompressedData;
     }
     else // SZ_DOUBLE
     {
-        double *decompressedData = (double *)malloc(nbEle * sizeof(double));
+        double *decompressedData = NULL;
         double absErrBound = bytesToDouble(bytes);
         unsigned char *cmpBytes = bytes + sizeof(double);
 
         if (fastMode == SZP_NONRANDOMACCESS)
         {
+            decompressedData = (double *)malloc(nbEle * sizeof(double));
             szp_double_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
         }
         else // SZP_RANDOMACCESS
         {
+            decompressedData = (double *)malloc(nbEle * sizeof(double));
             szp_double_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
         }
         return decompressedData;

@@ -75,7 +75,8 @@ int main(int argc, char *argv[])
 
     cost_start();
 
-    void *data = szp_decompress(SZP_NONRANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
+    void *data = szp_decompress(SZP_RANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
+    // void *data = szp_decompress(SZP_NONRANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
     cost_end();
     
     free(bytes);
