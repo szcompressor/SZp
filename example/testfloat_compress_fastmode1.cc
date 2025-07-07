@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   size_t outSize;
   cost_start();
   unsigned char *bytes = szp_compress(SZP_RANDOMACCESS, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
-  // unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, SZ_FLOAT, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
+  // unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
   // both random_access and nonrandom_access would cause wrong error bound when OMP_NUM_THREADS can not devided by blockSize
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);

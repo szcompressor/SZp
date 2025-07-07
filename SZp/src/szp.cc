@@ -20,7 +20,6 @@ int szp_dataEndianType = LITTLE_ENDIAN_DATA;
 int szp_sysEndianType = LITTLE_ENDIAN_SYSTEM;
 using namespace szp;
 
-// --- FIX: Changed error bound parameters from float to double. ---
 unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outSize, int errBoundMode, double absErrBound,
                             double relBoundRatio, size_t nbEle, int blockSize)
 {

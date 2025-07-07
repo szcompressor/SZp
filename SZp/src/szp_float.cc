@@ -806,9 +806,9 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
         unsigned int bit_count = 0;
         unsigned char *block_pointer = outputBytes_perthread;
         
-        unsigned char *temp_sign_arr = (unsigned char *)malloc(block_size - 1 * sizeof(unsigned char));
+        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
         
-        unsigned int *temp_predict_arr = (unsigned int *)malloc(block_size - 1 * sizeof(unsigned int));
+        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
         unsigned int signbytelength = 0; 
         unsigned int savedbitsbytelength = 0;
         
@@ -863,15 +863,12 @@ szp_float_openmp_threadblock_randomaccess_arg(unsigned char *output, float *oriD
             {
                 bit_count = (int)(log2f(max)) + 1;
                 block_pointer[0] = bit_count;
-
                 outSize_perthread++;
                 block_pointer++;
                 signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size - 1, block_pointer); 
                 block_pointer += signbytelength;
                 outSize_perthread += signbytelength;
-
                 savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size - 1, block_pointer, bit_count);
-
                 block_pointer += savedbitsbytelength;
                 outSize_perthread += savedbitsbytelength;
             }
