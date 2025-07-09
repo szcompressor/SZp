@@ -4,9 +4,8 @@ Makefile
 *.o
 *.lo
 *.so
-install/*
-./install
 .deps
 .libs
 .dirstamp
 libszp.la
+install
