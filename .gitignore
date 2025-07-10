@@ -1,1 +1,11 @@
 build-*
+*.log
+Makefile
+*.o
+*.lo
+*.so
+.deps
+.libs
+.dirstamp
+libszp.la
+install
