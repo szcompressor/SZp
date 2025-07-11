@@ -156,23 +156,22 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
     
     size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
     size_t maxPreservedBufferSize_perthread = 0;
-    unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
-    unsigned char* compressedData = outputBytes+sizeof(double);
-    doubleToBytes(outputBytes, absErrBound);
-    unsigned char *real_outputBytes; 
+
+    unsigned char *real_outputBytes;
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
-   
+
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    doubleToBytes(output, absErrBound);
+    unsigned char *outputBytes = output + sizeof(double);
+    
     (*outSize) = 0;
   
 
     unsigned int nbThreads = 0;
     double inver_bound = 0;
     unsigned int threadblocksize = 0;
-    unsigned int remainder = 0;
     unsigned int block_size = blockSize;
-    unsigned int num_full_block_in_tb = 0;
-    unsigned int num_remainder_in_tb = 0;
 
 #pragma omp parallel
     {
@@ -187,9 +186,6 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
             maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
             inver_bound = 1 / absErrBound;
             threadblocksize = nbEle / nbThreads;
-           remainder = nbEle % nbThreads;
-            num_full_block_in_tb = (threadblocksize - 1) / block_size; 
-            num_remainder_in_tb = (threadblocksize - 1) % block_size;
             
         }
         size_t i = 0;
@@ -198,8 +194,11 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
         size_t outSize_perthread = 0;
         
         int tid = omp_get_thread_num();
-        int lo = tid * threadblocksize;
-        int hi = (tid + 1) * threadblocksize;
+        size_t lo = tid * threadblocksize;
+        size_t hi = (tid + 1) * threadblocksize;
+        if (tid == nbThreads - 1) {
+            hi = nbEle; // Ensure the last thread processes all remaining elements
+        }
 
         int prior = 0;
         int current = 0;
@@ -207,12 +206,13 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
         unsigned int max = 0;
         unsigned int bit_count = 0;
         unsigned char *block_pointer = outputBytes_perthread;
-        prior = (op[lo]) * inver_bound;
         
-        memcpy(block_pointer, &prior, sizeof(int));
-        
-        block_pointer += sizeof(unsigned int);
-        outSize_perthread += sizeof(unsigned int);
+        if (lo < hi) { // Ensure thread has data to process
+            prior = (op[lo]) * inver_bound;
+            memcpy(block_pointer, &prior, sizeof(int));
+            block_pointer += sizeof(unsigned int);
+            outSize_perthread += sizeof(unsigned int);
+        }
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
        
@@ -220,262 +220,60 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
         unsigned int signbytelength = 0; 
         unsigned int savedbitsbytelength = 0;
        
-        if (num_full_block_in_tb > 0)
+        for (i = lo + 1; i < hi; i = i + block_size)
         {
-            for (i = lo + 1; i < hi - num_remainder_in_tb; i = i + block_size)
+            size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+            if (current_block_size == 0) continue;
+
+            max = 0;
+            for (j = 0; j < current_block_size; j++)
             {
-                max = 0;
-                for (j = 0; j < block_size; j++)
+                current = (op[i + j]) * inver_bound;
+                diff = current - prior;
+                prior = current;
+                if (diff == 0)
                 {
-                    current = (op[i + j]) * inver_bound;
-                    diff = current - prior;
-                    prior = current;
-                    if (diff == 0)
-                    {
-                        temp_sign_arr[j] = 0;
-                        temp_predict_arr[j] = 0;
-                    }
-                    else if (diff > 0)
-                    {
-                        temp_sign_arr[j] = 0;
-                        if (diff > max)
-                        {
-                            max = diff;
-                        }
-                        temp_predict_arr[j] = diff;
-                    }
-                    else if (diff < 0)
-                    {
-                        temp_sign_arr[j] = 1;
-                        diff = 0 - diff;
-                        if (diff > max)
-                        {
-                            max = diff;
-                        }
-                        temp_predict_arr[j] = diff;
-                    }
-                }
-                if (max == 0) 
-                {
-                    
-                    block_pointer[0] = 0;
-                    block_pointer++;
-                    outSize_perthread++;
+                    temp_sign_arr[j] = 0;
+                    temp_predict_arr[j] = 0;
                 }
                 else
                 {
-                    
-                    bit_count = (int)(log2f(max)) + 1;
-                    block_pointer[0] = bit_count;
-                    
-                    outSize_perthread++;
-                    block_pointer++;
-                    signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, blockSize, block_pointer); 
-                    block_pointer += signbytelength;
-                    outSize_perthread += signbytelength;
-                    
-                    savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, blockSize, block_pointer, bit_count);
-                    
-                    block_pointer += savedbitsbytelength;
-                    outSize_perthread += savedbitsbytelength;
-                }
-                
-            }
-        }
-        
-        if (num_remainder_in_tb > 0)
-        {
-            for (i = hi - num_remainder_in_tb; i < hi; i = i + block_size)
-            {
-                max = 0;
-                for (j = 0; j < num_remainder_in_tb; j++)
-                {
-                    current = (op[i + j]) * inver_bound;
-                    diff = current - prior;
-                    prior = current;
-                    if (diff == 0)
-                    {
-                        temp_sign_arr[j] = 0;
-                        temp_predict_arr[j] = 0;
-                    }
-                    else if (diff > 0)
-                    {
-                        temp_sign_arr[j] = 0;
-                        if (diff > max)
-                        {
-                            max = diff;
-                        }
-                        temp_predict_arr[j] = diff;
-                    }
-                    else if (diff < 0)
+                    if (diff < 0)
                     {
                         temp_sign_arr[j] = 1;
-                        diff = 0 - diff;
-                        if (diff > max)
-                        {
-                            max = diff;
-                        }
+                        temp_predict_arr[j] = -diff;
+                    }
+                    else
+                    {
+                        temp_sign_arr[j] = 0;
                         temp_predict_arr[j] = diff;
                     }
-                }
-                if (max == 0) 
-                {
-                    
-                    block_pointer[0] = 0;
-                    block_pointer++;
-                    outSize_perthread++;
-                }
-                else
-                {
-                    
-                    bit_count = (int)(log2f(max)) + 1;
-                    block_pointer[0] = bit_count;
-
-                   
-                    outSize_perthread++;
-                    block_pointer++;
-                    signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_tb, block_pointer); 
-                    block_pointer += signbytelength;
-                    outSize_perthread += signbytelength;
-                    savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_tb, block_pointer, bit_count);
-                    block_pointer += savedbitsbytelength;
-                    outSize_perthread += savedbitsbytelength;
+                    if (max < temp_predict_arr[j])
+                        max = temp_predict_arr[j];
                 }
             }
-        }
 
-        
-        if (tid == nbThreads - 1 && remainder != 0)
-        {
-
-            unsigned int num_full_block_in_rm = (remainder - 1) / block_size; 
-            unsigned int num_remainder_in_rm = (remainder - 1) % block_size;
-            prior = (op[hi]) * inver_bound;
-            
-            memcpy(block_pointer, &prior, sizeof(int));
-            block_pointer += sizeof(int);
-            outSize_perthread += sizeof(int);
-            if (num_full_block_in_rm > 0)
+            if (max == 0) 
             {
-                
-                for (i = hi + 1; i < nbEle - num_remainder_in_rm; i = i + block_size)
-                {
-                    max = 0;
-                    for (j = 0; j < block_size; j++)
-                    {
-                        current = (op[i + j]) * inver_bound;
-                        diff = current - prior;
-                        prior = current;
-                        if (diff == 0)
-                        {
-                            temp_sign_arr[j] = 0;
-                            temp_predict_arr[j] = 0;
-                        }
-                        else if (diff > 0)
-                        {
-                            temp_sign_arr[j] = 0;
-                            if (diff > max)
-                            {
-                                max = diff;
-                            }
-                            temp_predict_arr[j] = diff;
-                        }
-                        else if (diff < 0)
-                        {
-                            temp_sign_arr[j] = 1;
-                            diff = 0 - diff;
-                            if (diff > max)
-                            {
-                                max = diff;
-                            }
-                            temp_predict_arr[j] = diff;
-                        }
-                    }
-                    if (max == 0) 
-                    {
-                        
-                        block_pointer[0] = 0;
-                        block_pointer++;
-                        outSize_perthread++;
-                    }
-                    else
-                    {
-                        
-                        bit_count = (int)(log2f(max)) + 1;
-                        block_pointer[0] = bit_count;
-
-                        
-                        outSize_perthread++;
-                        block_pointer++;
-                        signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, blockSize, block_pointer); 
-                        block_pointer += signbytelength;
-                        outSize_perthread += signbytelength;
-                        savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, blockSize, block_pointer, bit_count);
-                        block_pointer += savedbitsbytelength;
-                        outSize_perthread += savedbitsbytelength;
-                    }
-                }
+                block_pointer[0] = 0;
+                block_pointer++;
+                outSize_perthread++;
             }
-            if (num_remainder_in_rm > 0)
+            else
             {
+                bit_count = (int)(log2f(max)) + 1;
+                block_pointer[0] = bit_count;
                 
-                for (i = nbEle - num_remainder_in_rm; i < nbEle; i = i + block_size)
-                {
-                    max = 0;
-                    for (j = 0; j < num_remainder_in_rm; j++)
-                    {
-                        current = (op[i + j]) * inver_bound;
-                        diff = current - prior;
-                        prior = current;
-                        if (diff == 0)
-                        {
-                            temp_sign_arr[j] = 0;
-                            temp_predict_arr[j] = 0;
-                        }
-                        else if (diff > 0)
-                        {
-                            temp_sign_arr[j] = 0;
-                            if (diff > max)
-                            {
-                                max = diff;
-                            }
-                            temp_predict_arr[j] = diff;
-                        }
-                        else if (diff < 0)
-                        {
-                            temp_sign_arr[j] = 1;
-                            diff = 0 - diff;
-                            if (diff > max)
-                            {
-                                max = diff;
-                            }
-                            temp_predict_arr[j] = diff;
-                        }
-                    }
-                    if (max == 0) 
-                    {
-                        
-                        block_pointer[0] = 0;
-                        block_pointer++;
-                        outSize_perthread++;
-                    }
-                    else
-                    {
-                        
-                        bit_count = (int)(log2f(max)) + 1;
-                        block_pointer[0] = bit_count;
-
-                        
-                        outSize_perthread++;
-                        block_pointer++;
-                        signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_tb, block_pointer); 
-                        block_pointer += signbytelength;
-                        outSize_perthread += signbytelength;
-                        savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_tb, block_pointer, bit_count);
-                        block_pointer += savedbitsbytelength;
-                        outSize_perthread += savedbitsbytelength;
-                    }
-                }
+                outSize_perthread++;
+                block_pointer++;
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+                block_pointer += signbytelength;
+                outSize_perthread += signbytelength;
+                
+                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
+                
+                block_pointer += savedbitsbytelength;
+                outSize_perthread += savedbitsbytelength;
             }
         }
 
@@ -512,7 +310,7 @@ szp_double_openmp_threadblock(double *oriData, size_t *outSize, double absErrBou
     }
 
     (*outSize) += sizeof(double);
-    return outputBytes;
+    return output;
 #else
     printf("Error! OpenMP not supported!\n");
     return NULL;
@@ -691,7 +489,7 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
 
     double *op = oriData;
 
-    size_t maxPreservedBufferSize_perthread = 0;
+    
     unsigned char* outputBytes = output + sizeof(double);
     doubleToBytes(output, absErrBound);
     
@@ -701,12 +499,8 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
 
     (*outSize) = 0;
 
-    double inver_bound = 0;
-    unsigned int threadblocksize = 0;
-    //unsigned int remainder = 0;
+    double inver_bound = 1 / absErrBound;
     unsigned int block_size = blockSize;
-    unsigned int num_full_block_in_tb = 0;
-    unsigned int num_remainder_in_tb = 0;
 
     int nbThreads = 1;
     real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
@@ -714,34 +508,27 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
     outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
     offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-    maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
-    inver_bound = 1 / absErrBound;
-    threadblocksize = nbEle / nbThreads;
-    //remainder = nbEle % nbThreads; //this remainder was not used in the following code.
-    num_full_block_in_tb = (threadblocksize - 1) / block_size; 
-    num_remainder_in_tb = (threadblocksize - 1) % block_size;
-
-    size_t i = 0;
-    unsigned int j = 0;
+    size_t maxPreservedBufferSize_perthread = sizeof(double) * nbEle;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
     int tid = 0;
-    size_t lo = tid * threadblocksize;
-    size_t hi = (tid + 1) * threadblocksize;
+    size_t lo = 0;
+    size_t hi = nbEle;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
-    int max = 0;
+    unsigned int max = 0;
     unsigned int bit_count = 0;
     unsigned char *block_pointer = outputBytes_perthread;
-    prior = (op[lo]) * inver_bound;
-    
-    memcpy(block_pointer, &prior, sizeof(int));
-    
-    block_pointer += sizeof(unsigned int);
-    outSize_perthread += sizeof(unsigned int);
+
+    if (lo < hi) {
+        prior = (op[lo]) * inver_bound;
+        memcpy(block_pointer, &prior, sizeof(int));
+        block_pointer += sizeof(unsigned int);
+        outSize_perthread += sizeof(unsigned int);
+    }
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     
@@ -749,149 +536,78 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
     unsigned int signbytelength = 0; 
     unsigned int savedbitsbytelength = 0;
     
-    if (num_full_block_in_tb > 0)
+    for (size_t i = lo + 1; i < hi; i = i + block_size)
     {
-        for (i = lo + 1; i < hi - num_remainder_in_tb; i = i + block_size)
-        {
-            max = 0;
-            for (j = 0; j < block_size; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                }
-                else if (diff > 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                }
-                else if (diff < 0)
-                {
-                    temp_sign_arr[j] = 1;
-                    diff = 0 - diff;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                }
-            }
-            if (max == 0) 
-            {
-                
-                block_pointer[0] = 0;
-                block_pointer++;
-                outSize_perthread++;
-            }
-            else
-            {
-                
-                bit_count = (int)(log2f(max)) + 1;
-                block_pointer[0] = bit_count;
-                
-                outSize_perthread++;
-                block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, blockSize, block_pointer); 
-                block_pointer += signbytelength;
-                outSize_perthread += signbytelength;
-                
-                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, blockSize, block_pointer, bit_count);
-                
-                block_pointer += savedbitsbytelength;
-                outSize_perthread += savedbitsbytelength;
-            }
-            
-        }
-    }
-    
-    if (num_remainder_in_tb > 0)
-    {
-        for (i = hi - num_remainder_in_tb; i < hi; i = i + block_size)
-        {
-            max = 0;
-            for (j = 0; j < num_remainder_in_tb; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                }
-                else if (diff > 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                }
-                else if (diff < 0)
-                {
-                    temp_sign_arr[j] = 1;
-                    diff = 0 - diff;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                }
-            }
-            if (max == 0)
-            {
-                
-                block_pointer[0] = 0;
-                block_pointer++;
-                outSize_perthread++;
-            }
-            else
-            {
-                
-                bit_count = (int)(log2f(max)) + 1;
-                block_pointer[0] = bit_count;
+        size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+        if (current_block_size == 0) continue;
 
-               
-                outSize_perthread++;
-                block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_tb, block_pointer); 
-                block_pointer += signbytelength;
-                outSize_perthread += signbytelength;
-                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_tb, block_pointer, bit_count);
-                block_pointer += savedbitsbytelength;
-                outSize_perthread += savedbitsbytelength;
+        max = 0;
+        for (size_t j = 0; j < current_block_size; j++)
+        {
+            current = (op[i + j]) * inver_bound;
+            diff = current - prior;
+            prior = current;
+            if (diff == 0)
+            {
+                temp_sign_arr[j] = 0;
+                temp_predict_arr[j] = 0;
             }
+            else
+            {
+                if (diff < 0)
+                {
+                    temp_sign_arr[j] = 1;
+                    temp_predict_arr[j] = -diff;
+                }
+                else
+                {
+                    temp_sign_arr[j] = 0;
+                    temp_predict_arr[j] = diff;
+                }
+                if (max < temp_predict_arr[j])
+                    max = temp_predict_arr[j];
+            }
+        }
+        if (max == 0) 
+        {
+            block_pointer[0] = 0;
+            block_pointer++;
+            outSize_perthread++;
+        }
+        else
+        {
+            bit_count = (int)(log2f(max)) + 1;
+            block_pointer[0] = bit_count;
+            
+            outSize_perthread++;
+            block_pointer++;
+            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+            block_pointer += signbytelength;
+            outSize_perthread += signbytelength;
+            
+            savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
+            
+            block_pointer += savedbitsbytelength;
+            outSize_perthread += savedbitsbytelength;
         }
     }
 
     outSize_perthread_arr[tid] = outSize_perthread;
-
     offsets_perthread_arr[0] = 0;
 
     (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
     memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
     
-
     memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
     
     free(outputBytes_perthread);
     free(temp_sign_arr);
     free(temp_predict_arr);
-
     
     free(outSize_perthread_arr);
     free(offsets_perthread_arr);
     
-    (*outSize) += sizeof(double);    
+    (*outSize) += sizeof(double);
 }
 
 size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriData, size_t *outSize, double absErrBound,
@@ -902,7 +618,6 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
 
     double *op = oriData;
 
-    size_t maxPreservedBufferSize_perthread = 0;
     unsigned char* outputBytes = output + sizeof(double);
     doubleToBytes(output, absErrBound);
     
@@ -913,12 +628,8 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
     (*outSize) = 0;
     total_memaccess += sizeof(size_t);
 
-    double inver_bound = 0;
-    size_t threadblocksize = 0;
-    //unsigned int remainder = 0;
+    double inver_bound = 1 / absErrBound;
     unsigned int block_size = blockSize;
-    unsigned int num_full_block_in_tb = 0;
-    unsigned int num_remainder_in_tb = 0;
 
     int nbThreads = 1;
     real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
@@ -927,191 +638,96 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
     outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
     offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
-    maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
-    inver_bound = 1 / absErrBound;
-    threadblocksize = nbEle / nbThreads;
-    //remainder = nbEle % nbThreads;
-    num_full_block_in_tb = (threadblocksize - 1) / block_size; 
-    num_remainder_in_tb = (threadblocksize - 1) % block_size;
-
-    size_t i = 0;
-    unsigned int j = 0;
+    size_t maxPreservedBufferSize_perthread = sizeof(double) * nbEle;
     unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
     size_t outSize_perthread = 0;
     
     int tid = 0;
-    size_t lo = tid * threadblocksize;
-    size_t hi = (tid + 1) * threadblocksize;
+    size_t lo = 0;
+    size_t hi = nbEle;
 
     int prior = 0;
     int current = 0;
     int diff = 0;
-    int max = 0;
+    unsigned int max = 0;
     unsigned int bit_count = 0;
     unsigned char *block_pointer = outputBytes_perthread;
-    prior = (op[lo]) * inver_bound;
-    total_memaccess += sizeof(double);
     
-    memcpy(block_pointer, &prior, sizeof(int));
-    total_memaccess += sizeof(int);
-    total_memaccess += sizeof(int);
-    
-    block_pointer += sizeof(unsigned int);
-    outSize_perthread += sizeof(unsigned int);
+    if (lo < hi) {
+        prior = (op[lo]) * inver_bound;
+        total_memaccess += sizeof(double);
+        memcpy(block_pointer, &prior, sizeof(int));
+        total_memaccess += sizeof(int) * 2; // read and write
+        block_pointer += sizeof(unsigned int);
+        outSize_perthread += sizeof(unsigned int);
+    }
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
-    
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
     unsigned int signbytelength = 0; 
     unsigned int savedbitsbytelength = 0;
     
-    if (num_full_block_in_tb > 0)
+    for (size_t i = lo + 1; i < hi; i = i + block_size)
     {
-        for (i = lo + 1; i < hi - num_remainder_in_tb; i = i + block_size)
-        {
-            max = 0;
-            for (j = 0; j < block_size; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                total_memaccess += sizeof(double);
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                    total_memaccess += sizeof(unsigned int);
-                    total_memaccess += sizeof(unsigned int);
-                }
-                else if (diff > 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    total_memaccess += sizeof(unsigned int);
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                    total_memaccess += sizeof(unsigned int);
-                }
-                else if (diff < 0)
-                {
-                    temp_sign_arr[j] = 1;
-                    total_memaccess += sizeof(unsigned int);
-                    diff = 0 - diff;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                    total_memaccess += sizeof(unsigned int);
-                }
-            }
-            if (max == 0) 
-            {
-                
-                block_pointer[0] = 0;
-                total_memaccess += sizeof(unsigned char);
-                block_pointer++;
-                outSize_perthread++;
-            }
-            else
-            {
-                
-                bit_count = (int)(log2f(max)) + 1;
-                block_pointer[0] = bit_count;
-                total_memaccess += sizeof(unsigned char);
-                
-                outSize_perthread++;
-                block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, blockSize, block_pointer); 
-                total_memaccess += (sizeof(unsigned int) * blockSize);
-                block_pointer += signbytelength;
-                total_memaccess += (sizeof(unsigned char) * signbytelength);
-                outSize_perthread += signbytelength;
-                
-                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, blockSize, block_pointer, bit_count);
-                total_memaccess += (sizeof(unsigned int) * blockSize);
-                
-                block_pointer += savedbitsbytelength;
-                total_memaccess += (sizeof(unsigned char) * savedbitsbytelength);
-                outSize_perthread += savedbitsbytelength;
-            }
-            
-        }
-    }
-    
-    if (num_remainder_in_tb > 0)
-    {
-        for (i = hi - num_remainder_in_tb; i < hi; i = i + block_size)
-        {
-            max = 0;
-            for (j = 0; j < num_remainder_in_tb; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                total_memaccess += sizeof(double);
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                    total_memaccess += sizeof(unsigned int);
-                    total_memaccess += sizeof(unsigned int);
-                }
-                else if (diff > 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    total_memaccess += sizeof(unsigned int);
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                    total_memaccess += sizeof(unsigned int);
-                }
-                else if (diff < 0)
-                {
-                    temp_sign_arr[j] = 1;
-                    total_memaccess += sizeof(unsigned int);
-                    diff = 0 - diff;
-                    if (diff > max)
-                    {
-                        max = diff;
-                    }
-                    temp_predict_arr[j] = diff;
-                    total_memaccess += sizeof(unsigned int);
-                }
-            }
-            if (max == 0) 
-            {
-                
-                block_pointer[0] = 0;
-                total_memaccess += sizeof(unsigned char);
-                block_pointer++;
-                outSize_perthread++;
-            }
-            else
-            {
-                
-                bit_count = (int)(log2f(max)) + 1;
-                block_pointer[0] = bit_count;
-                total_memaccess += sizeof(unsigned char);
+        size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+        if (current_block_size == 0) continue;
 
-                
-                outSize_perthread++;
-                block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, num_remainder_in_tb, block_pointer); 
-                block_pointer += signbytelength;
-                outSize_perthread += signbytelength;
-                total_memaccess += (sizeof(unsigned int) * num_remainder_in_tb);
-                total_memaccess += (sizeof(unsigned char) * signbytelength);
-                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, num_remainder_in_tb, block_pointer, bit_count);
-                block_pointer += savedbitsbytelength;
-                outSize_perthread += savedbitsbytelength;
-                total_memaccess += (sizeof(unsigned int) * num_remainder_in_tb);
-                total_memaccess += (sizeof(unsigned char) * savedbitsbytelength);
+        max = 0;
+        for (size_t j = 0; j < current_block_size; j++)
+        {
+            current = (op[i + j]) * inver_bound;
+            total_memaccess += sizeof(double);
+            diff = current - prior;
+            prior = current;
+            if (diff == 0)
+            {
+                temp_sign_arr[j] = 0;
+                temp_predict_arr[j] = 0;
             }
+            else
+            {
+                if (diff < 0)
+                {
+                    temp_sign_arr[j] = 1;
+                    temp_predict_arr[j] = -diff;
+                }
+                else
+                {
+                    temp_sign_arr[j] = 0;
+                    temp_predict_arr[j] = diff;
+                }
+                if (max < temp_predict_arr[j])
+                    max = temp_predict_arr[j];
+            }
+            total_memaccess += sizeof(unsigned char) + sizeof(unsigned int); // for temp arrays
+        }
+        if (max == 0) 
+        {
+            block_pointer[0] = 0;
+            total_memaccess += sizeof(unsigned char);
+            block_pointer++;
+            outSize_perthread++;
+        }
+        else
+        {
+            bit_count = (int)(log2f(max)) + 1;
+            block_pointer[0] = bit_count;
+            total_memaccess += sizeof(unsigned char);
+            
+            outSize_perthread++;
+            block_pointer++;
+            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+            total_memaccess += sizeof(unsigned char) * current_block_size; // read temp_sign_arr
+            block_pointer += signbytelength;
+            total_memaccess += sizeof(unsigned char) * signbytelength; // write to block_pointer
+            outSize_perthread += signbytelength;
+            
+            savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
+            total_memaccess += sizeof(unsigned int) * current_block_size; // read temp_predict_arr
+            
+            block_pointer += savedbitsbytelength;
+            total_memaccess += sizeof(unsigned char) * savedbitsbytelength; // write to block_pointer
+            outSize_perthread += savedbitsbytelength;
         }
     }
 
@@ -1124,24 +740,182 @@ size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriDat
     (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
     total_memaccess += (sizeof(size_t) * 3);
     memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
-    total_memaccess += (sizeof(unsigned char) * nbThreads * sizeof(size_t));
-    total_memaccess += (sizeof(unsigned char) * nbThreads * sizeof(size_t));
+    total_memaccess += (sizeof(unsigned char) * nbThreads * sizeof(size_t)) * 2; // read and write
     
-
     memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
-    total_memaccess += (sizeof(unsigned char) * outSize_perthread);
-    total_memaccess += (sizeof(unsigned char) * outSize_perthread);
+    total_memaccess += (sizeof(unsigned char) * outSize_perthread) * 2; // read and write
     
     free(outputBytes_perthread);
     free(temp_sign_arr);
     free(temp_predict_arr);
-
     
     free(outSize_perthread_arr);
     free(offsets_perthread_arr);
     
     (*outSize) += sizeof(double);
     return total_memaccess;
+}
+
+unsigned char *szp_double_openmp_threadblock_randomaccess(double *oriData, size_t *outSize, double absErrBound,
+                                              size_t nbEle, int blockSize)
+{
+#ifdef _OPENMP
+    double *op = oriData;
+
+    size_t maxPreservedBufferSize = sizeof(double) + sizeof(double) * nbEle; 
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    doubleToBytes(output, absErrBound);
+    
+    unsigned char* outputBytes = output + sizeof(double);
+    
+    size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char *real_outputBytes; 
+    size_t *outSize_perthread_arr;
+    size_t *offsets_perthread_arr;
+    
+    (*outSize) = 0;
+    
+
+    unsigned int nbThreads = 0;
+    double inver_bound = 0;
+    unsigned int threadblocksize = 0;
+    unsigned int block_size = blockSize;
+
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            nbThreads = omp_get_num_threads();
+            real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
+            (*outSize) += nbThreads * sizeof(size_t); 
+            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+
+            maxPreservedBufferSize_perthread = (sizeof(double) * nbEle + nbThreads - 1) / nbThreads;
+            inver_bound = 1 / absErrBound;
+            threadblocksize = nbEle / nbThreads;
+            
+        }
+        size_t i = 0;
+        size_t j = 0;
+        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        size_t outSize_perthread = 0;
+
+        int tid = omp_get_thread_num();
+        size_t lo = tid * threadblocksize;
+        size_t hi = (tid + 1) * threadblocksize;
+        if (tid == nbThreads - 1) {
+            hi = nbEle; // Ensure the last thread processes all remaining elements
+        }
+
+        int prior = 0;
+        int current = 0;
+        int diff = 0;
+        unsigned int max = 0;
+        unsigned int bit_count = 0;
+        unsigned char *block_pointer = outputBytes_perthread;
+        
+        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
+        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
+        unsigned int signbytelength = 0; 
+        unsigned int savedbitsbytelength = 0;
+
+        for (i = lo; i < hi; i = i + block_size)
+        {
+            size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+            if (current_block_size == 0) continue;
+
+            max = 0;
+            prior = (op[i]) * inver_bound;
+            memcpy(block_pointer, &prior, sizeof(int));
+            block_pointer += sizeof(unsigned int);
+            outSize_perthread += sizeof(unsigned int);
+
+            if (current_block_size > 1)
+            {
+                for (j = 0; j < current_block_size - 1; j++)
+                {
+                    current = (op[i + j + 1]) * inver_bound;
+                    diff = current - prior;
+                    prior = current;
+                    if (diff == 0)
+                    {
+                        temp_sign_arr[j] = 0;
+                        temp_predict_arr[j] = 0;
+                    }
+                    else
+                    {
+                        if (diff < 0)
+                        {
+                            temp_sign_arr[j] = 1;
+                            temp_predict_arr[j] = -diff;
+                        }
+                        else
+                        {
+                            temp_sign_arr[j] = 0;
+                            temp_predict_arr[j] = diff;
+                        }
+                        if (max < temp_predict_arr[j])
+                            max = temp_predict_arr[j];
+                    }
+                }
+            }
+
+            if (max == 0) 
+            {
+                block_pointer[0] = 0;
+                block_pointer++;
+                outSize_perthread++;
+            }
+            else
+            {
+                bit_count = (int)(log2f(max)) + 1;
+                block_pointer[0] = bit_count;
+                outSize_perthread++;
+                block_pointer++;
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size - 1, block_pointer); 
+                block_pointer += signbytelength;
+                outSize_perthread += signbytelength;
+                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size - 1, block_pointer, bit_count);
+                block_pointer += savedbitsbytelength;
+                outSize_perthread += savedbitsbytelength;
+            }
+        }
+
+        outSize_perthread_arr[tid] = outSize_perthread;
+#pragma omp barrier
+
+#pragma omp single
+        {
+            offsets_perthread_arr[0] = 0;
+            for (i = 1; i < nbThreads; i++)
+            {
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+            }
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+        }
+#pragma omp barrier
+        memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+#pragma omp barrier
+        
+        free(outputBytes_perthread);
+        free(temp_sign_arr);
+        free(temp_predict_arr);
+#pragma omp single
+        {
+            free(outSize_perthread_arr);
+            free(offsets_perthread_arr);
+        }
+    }
+    
+    (*outSize) += sizeof(double);
+    return output;
+    
+#else
+    printf("Error! OpenMP not supported!\n");
+    return NULL;
+#endif
 }
 
 void 
