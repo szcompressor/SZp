@@ -39,6 +39,10 @@ void szp_double_single_thread_arg(unsigned char *output, double *oriData, size_t
 size_t szp_double_single_thread_arg_record(unsigned char *output, double *oriData, size_t *outSize, double absErrBound,
                                        size_t nbEle, int blockSize);
 
+unsigned char *
+szp_double_openmp_threadblock_randomaccess(double *oriData, size_t *outSize, double absErrBound,
+                                              size_t nbEle, int blockSize);
+
 void
 szp_double_openmp_threadblock_randomaccess_arg(unsigned char* output, double *oriData, size_t *outSize, double absErrBound,
                                           size_t nbEle, int blockSize);

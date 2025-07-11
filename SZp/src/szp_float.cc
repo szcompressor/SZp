@@ -160,8 +160,9 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
     size_t *outSize_perthread_arr;
     size_t *offsets_perthread_arr;
 
-    unsigned char *outputBytes = (unsigned char *)malloc(maxPreservedBufferSize);
-    floatToBytes(outputBytes, absErrBound);
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    floatToBytes(output, absErrBound); 
+    unsigned char *outputBytes = output + sizeof(float); // skip the first buffer for absErrBound
    
     (*outSize) = 0;
   
@@ -176,8 +177,8 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
 #pragma omp single
         {
             nbThreads = omp_get_num_threads();
-            real_outputBytes = outputBytes + sizeof(float) + nbThreads * sizeof(size_t);
-            (*outSize) += sizeof(float) + nbThreads * sizeof(size_t); 
+            real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
+            (*outSize) += nbThreads * sizeof(size_t); 
             outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
             offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
 
@@ -299,8 +300,8 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             free(offsets_perthread_arr);
         }
     }
-
-    return outputBytes;
+    (*outSize) += sizeof(float);
+    return output;
 #else
     printf("Error! OpenMP not supported!\n");
     return NULL;
@@ -746,6 +747,168 @@ size_t szp_float_single_thread_arg_record(unsigned char *output, float *oriData,
     
     (*outSize) += sizeof(float);
     return total_memaccess;
+}
+
+unsigned char *
+szp_float_openmp_threadblock_randomaccess(float *oriData, size_t *outSize, float absErrBound,
+                                          size_t nbEle, int blockSize)
+{
+#ifdef _OPENMP
+    
+    float *op = oriData;
+
+    size_t maxPreservedBufferSize = sizeof(float) * nbEle + sizeof(float);
+    unsigned char *output = (unsigned char *)malloc(maxPreservedBufferSize);
+    floatToBytes(output, absErrBound);
+    
+    unsigned char* outputBytes = output + sizeof(float);
+    
+    size_t maxPreservedBufferSize_perthread = 0;
+    unsigned char *real_outputBytes; 
+    size_t *outSize_perthread_arr;
+    size_t *offsets_perthread_arr;
+    
+    (*outSize) = 0;
+    
+    unsigned int nbThreads = 0;
+    double inver_bound = 0;
+    unsigned int threadblocksize = 0;
+    unsigned int block_size = blockSize;
+
+#pragma omp parallel
+    {
+#pragma omp single
+        {
+            nbThreads = omp_get_num_threads();
+            real_outputBytes = outputBytes + nbThreads * sizeof(size_t);
+            (*outSize) += nbThreads * sizeof(size_t); 
+            outSize_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+            offsets_perthread_arr = (size_t *)malloc(nbThreads * sizeof(size_t));
+
+            maxPreservedBufferSize_perthread = (sizeof(float) * nbEle + nbThreads - 1) / nbThreads;
+            inver_bound = 1 / absErrBound;
+            threadblocksize = nbEle / nbThreads;
+        }
+        size_t i = 0;
+        size_t j = 0;
+        unsigned char *outputBytes_perthread = (unsigned char *)malloc(maxPreservedBufferSize_perthread);
+        size_t outSize_perthread = 0;
+        
+        int tid = omp_get_thread_num();
+        size_t lo = tid * threadblocksize;
+        size_t hi = (tid + 1) * threadblocksize;
+        if (tid == nbThreads - 1) {
+            hi = nbEle; // Ensure the last thread processes all remaining elements
+        }
+
+        int prior = 0;
+        int current = 0;
+        int diff = 0;
+        unsigned int max = 0;
+        unsigned int bit_count = 0;
+        unsigned char *block_pointer = outputBytes_perthread;
+        
+        unsigned char *temp_sign_arr = (unsigned char *)malloc((block_size - 1) * sizeof(unsigned char));
+        unsigned int *temp_predict_arr = (unsigned int *)malloc((block_size - 1) * sizeof(unsigned int));
+        unsigned int signbytelength = 0; 
+        unsigned int savedbitsbytelength = 0;
+        
+        for (i = lo; i < hi; i = i + block_size)
+        {
+            size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
+            if (current_block_size == 0) continue;
+
+            max = 0;
+            prior = (op[i]) * inver_bound;
+            memcpy(block_pointer, &prior, sizeof(int));
+            block_pointer += sizeof(unsigned int);
+            outSize_perthread += sizeof(unsigned int);
+
+            if (current_block_size > 1)
+            {
+                for (j = 0; j < current_block_size - 1; j++)
+                {
+                    current = (op[i + j + 1]) * inver_bound;
+                    diff = current - prior;
+                    prior = current;
+                    if (diff == 0)
+                    {
+                        temp_sign_arr[j] = 0;
+                        temp_predict_arr[j] = 0;
+                    }
+                    else
+                    {
+                        if (diff < 0)
+                        {
+                            temp_sign_arr[j] = 1;
+                            temp_predict_arr[j] = -diff;
+                        }
+                        else
+                        {
+                            temp_sign_arr[j] = 0;
+                            temp_predict_arr[j] = diff;
+                        }
+                        if (max < temp_predict_arr[j])
+                            max = temp_predict_arr[j];
+                    }
+                }
+            }
+
+            if (max == 0) 
+            {
+                block_pointer[0] = 0;
+                block_pointer++;
+                outSize_perthread++;
+            }
+            else
+            {
+                bit_count = (int)(log2f(max)) + 1;
+                block_pointer[0] = bit_count;
+                outSize_perthread++;
+                block_pointer++;
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size - 1, block_pointer); 
+                block_pointer += signbytelength;
+                outSize_perthread += signbytelength;
+                savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size - 1, block_pointer, bit_count);
+                block_pointer += savedbitsbytelength;
+                outSize_perthread += savedbitsbytelength;
+            }
+        }
+
+        outSize_perthread_arr[tid] = outSize_perthread;
+#pragma omp barrier
+
+#pragma omp single
+        {
+            offsets_perthread_arr[0] = 0;
+            for (i = 1; i < nbThreads; i++)
+            {
+                offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
+            }
+            (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
+            memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
+        }
+#pragma omp barrier
+        memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
+#pragma omp barrier
+        
+        free(outputBytes_perthread);
+        free(temp_sign_arr);
+        free(temp_predict_arr);
+#pragma omp single
+        {
+            free(outSize_perthread_arr);
+            free(offsets_perthread_arr);
+        }
+    }
+    
+    (*outSize) += sizeof(float);
+    return output;
+    
+#else
+    printf("Error! OpenMP not supported!\n");
+    return NULL;
+#endif
 }
 
 void

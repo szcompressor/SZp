@@ -18,13 +18,15 @@
 extern "C" {
 #endif
 
-void szp_double_decompress_openmp_threadblock(double **newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
+double *szp_double_decompress_openmp_threadblock(size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
 
 void szp_double_decompress_openmp_threadblock_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
 
 void szp_double_decompress_single_thread_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
 
 size_t szp_double_decompress_single_thread_arg_record(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
+
+double *szp_double_decompress_openmp_threadblock_randomaccess(size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
 
 void szp_double_decompress_openmp_threadblock_randomaccess_arg(double *newData, size_t nbEle, double absErrBound, int blockSize, unsigned char *cmpBytes);
 
