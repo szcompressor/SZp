@@ -50,18 +50,22 @@ unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outS
         float *oriData = (float *)data;
         if (fastMode == SZP_NONRANDOMACCESS)
         {
-            bytes = (unsigned char *)malloc(sizeof(float) + sizeof(float) * length);
-            szp_float_openmp_threadblock_arg(bytes, oriData, outSize, realPrecision,
-                                             length, blockSize);
+            // bytes = (unsigned char *)malloc(sizeof(float) + sizeof(float) * length);
+            // szp_float_openmp_threadblock_arg(bytes, oriData, outSize, realPrecision,
+            //                                  length, blockSize); 
 
             // --- NON _arg version ---
-            // bytes = szp_float_openmp_threadblock(oriData, outSize, realPrecision, length, blockSize);
+            bytes = szp_float_openmp_threadblock(oriData, outSize, realPrecision, length, blockSize);
             // --- NON _arg version ---
         }
         else if (fastMode == SZP_RANDOMACCESS)
         {
-            bytes = (unsigned char *)malloc(sizeof(float) + sizeof(float) * length);
-            szp_float_openmp_threadblock_randomaccess_arg(bytes, oriData, outSize, realPrecision, length, blockSize);
+            // bytes = (unsigned char *)malloc(sizeof(float) + sizeof(float) * length);
+            // szp_float_openmp_threadblock_randomaccess_arg(bytes, oriData, outSize, realPrecision, length, blockSize); 
+
+            // --- NON _arg version ---
+            bytes = szp_float_openmp_threadblock_randomaccess(oriData, outSize, realPrecision, length, blockSize);  
+            // --- NON _arg version ---
         }
     }
     else // SZ_DOUBLE
@@ -89,15 +93,23 @@ unsigned char *szp_compress(int fastMode, int dataType, void *data, size_t *outS
         double *oriData = (double *)data;
         if (fastMode == SZP_NONRANDOMACCESS)
         {
-            bytes = (unsigned char *)malloc(sizeof(double) + sizeof(double) * length);
-            szp_double_openmp_threadblock_arg(bytes, oriData, outSize, realPrecision,
-                                              length, blockSize);
+            // bytes = (unsigned char *)malloc(sizeof(double) + sizeof(double) * length);
+            // szp_double_openmp_threadblock_arg(bytes, oriData, outSize, realPrecision,
+            //                                   length, blockSize);  
+
+            // --- NON _arg version ---
+            bytes = szp_double_openmp_threadblock(oriData, outSize, realPrecision, length, blockSize); 
+            // --- NON _arg version ---
         }
         else if (fastMode == SZP_RANDOMACCESS)
         {
-            bytes = (unsigned char *)malloc(sizeof(double) + sizeof(double) * length);
-            szp_double_openmp_threadblock_randomaccess_arg(bytes, oriData, outSize, realPrecision,
-                                                           length, blockSize);
+            // bytes = (unsigned char *)malloc(sizeof(double) + sizeof(double) * length);
+            // szp_double_openmp_threadblock_randomaccess_arg(bytes, oriData, outSize, realPrecision,
+            //                                                length, blockSize); 
+
+            // --- NON _arg version ---
+            bytes = szp_double_openmp_threadblock_randomaccess(oriData, outSize, realPrecision, length, blockSize); 
+            // --- NON _arg version ---
         }
     }
     return bytes;
@@ -120,17 +132,21 @@ void *szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t by
         float *decompressedData = NULL;
         if (fastMode == SZP_NONRANDOMACCESS)
         {
-            decompressedData = (float *)malloc(nbEle * sizeof(float));
-            szp_float_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+            // decompressedData = (float *)malloc(nbEle * sizeof(float));
+            // szp_float_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes); 
 
             // --- NON _arg version ---
-            // decompressedData = szp_float_decompress_openmp_threadblock(nbEle, absErrBound, blockSize, cmpBytes);
+            decompressedData = szp_float_decompress_openmp_threadblock(nbEle, absErrBound, blockSize, cmpBytes); 
             // --- NON _arg version ---
         }
         else // SZP_RANDOMACCESS
         {
-            decompressedData = (float *)malloc(nbEle * sizeof(float));
-            szp_float_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+            // decompressedData = (float *)malloc(nbEle * sizeof(float));
+            // szp_float_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes); 
+
+            // --- NON _arg version ---
+            decompressedData = szp_float_decompress_openmp_threadblock_randomaccess(nbEle, absErrBound, blockSize, cmpBytes); 
+            // --- NON _arg version ---
 
         }
         return decompressedData;
@@ -143,13 +159,20 @@ void *szp_decompress(int fastMode, int dataType, unsigned char *bytes, size_t by
 
         if (fastMode == SZP_NONRANDOMACCESS)
         {
-            decompressedData = (double *)malloc(nbEle * sizeof(double));
-            szp_double_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+            // decompressedData = (double *)malloc(nbEle * sizeof(double));
+            // szp_double_decompress_openmp_threadblock_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes); 
+
+            // --- NON _arg version ---
+            decompressedData = szp_double_decompress_openmp_threadblock(nbEle, absErrBound, blockSize, cmpBytes); 
+            // --- NON _arg version ---
         }
         else // SZP_RANDOMACCESS
         {
-            decompressedData = (double *)malloc(nbEle * sizeof(double));
-            szp_double_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes);
+            // decompressedData = (double *)malloc(nbEle * sizeof(double));
+            // szp_double_decompress_openmp_threadblock_randomaccess_arg(decompressedData, nbEle, absErrBound, blockSize, cmpBytes); 
+            // --- NON _arg version ---
+            decompressedData = szp_double_decompress_openmp_threadblock_randomaccess(nbEle, absErrBound, blockSize, cmpBytes); 
+            // --- NON _arg version ---
         }
         return decompressedData;
     }
