@@ -33,10 +33,10 @@ void cost_end()
 int main(int argc, char *argv[])
 {
   char oriFilePath[640], outputFilePath[645];
-  if (argc < 4)
+  if (argc < 5)
   {
-    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [data_type]\n");
-    printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3 float\n");
+    printf("Usage: testfloat_compress_fastmode1 [srcFilePath] [block size] [err bound] [data_type] [access_type]\n");
+    printf("Example: testfloat_compress_fastmode1 testfloat_8_8_128.dat 64 1E-3 float random\n");
     exit(0);
   }
 
@@ -44,7 +44,10 @@ int main(int argc, char *argv[])
   int blockSize = atoi(argv[2]);
   double errBound = atof(argv[3]);
   char* dataType = argv[4];
+  char* accessType = argv[5];
   int sz_dataType = SZ_FLOAT;
+  int accessMode = SZP_RANDOMACCESS;
+
   if (strcmp(dataType, "float") != 0 && strcmp(dataType, "double") != 0)
   {
     printf("Error: data type must be 'float' or 'double'!\n");
@@ -54,7 +57,21 @@ int main(int argc, char *argv[])
   {
     sz_dataType = SZ_DOUBLE;
   }
-  
+
+  if (strcmp(accessType, "random") == 0)
+  {
+    accessMode = SZP_RANDOMACCESS;
+  }
+  else if (strcmp(accessType, "nonrandom") == 0)
+  {
+    accessMode = SZP_NONRANDOMACCESS;
+  }
+  else
+  {
+    printf("Error: access type must be 'random' or 'nonrandom'!\n");
+    exit(0);
+  }
+
   sprintf(outputFilePath, "%s.szp", oriFilePath);
 
   int status = 0;
@@ -74,12 +91,9 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-
   size_t outSize;
   cost_start();
-  unsigned char *bytes = szp_compress(SZP_RANDOMACCESS, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
-  // unsigned char *bytes = szp_compress(SZP_NONRANDOMACCESS, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
-  // both random_access and nonrandom_access would cause wrong error bound when OMP_NUM_THREADS can not devided by blockSize
+  unsigned char *bytes = szp_compress(accessMode, sz_dataType, data, &outSize, ABS, errBound, 0, nbEle, blockSize);
   cost_end();
   printf("\ntimecost=%f, total fastmode1\n", totalCost);
   printf("compression size = %zu, CR = %f, writing to %s\n", outSize, 1.0f * nbEle * ((sz_dataType == SZ_FLOAT) ? sizeof(float) : sizeof(double))/ outSize, outputFilePath);

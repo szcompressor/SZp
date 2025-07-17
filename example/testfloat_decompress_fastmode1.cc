@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 {
     size_t nbEle, totalNbEle;
     char zipFilePath[640], outputFilePath[645];
-    if (argc < 5) // Corrected argument count check
+    if (argc < 6) // Updated argument count check
     {
-        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size] [data_type]\n");
-        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.szp 8192 64 float\n");
+        printf("Usage: testfloat_decompress_fastmode1 [srcFilePath] [nbEle] [block size] [data_type] [access_type]\n");
+        printf("Example: testfloat_decompress_fastmode1 testfloat_8_8_128.dat.szp 8192 64 float random\n");
         exit(0);
     }
 
@@ -51,7 +51,10 @@ int main(int argc, char *argv[])
     nbEle = strtoimax(argv[2], NULL, 10);
     int blockSize = atoi(argv[3]);
     char* dataType = argv[4];
+    char* accessType = argv[5];
     int sz_dataType = SZ_FLOAT;
+    int accessMode = SZP_RANDOMACCESS;
+
     if (strcmp(dataType, "float") != 0 && strcmp(dataType, "double") != 0)
     {
         printf("Error: data type must be 'float' or 'double'!\n");
@@ -60,6 +63,20 @@ int main(int argc, char *argv[])
     if (strcmp(dataType, "double") == 0)
     {
         sz_dataType = SZ_DOUBLE;
+    }
+
+    if (strcmp(accessType, "random") == 0)
+    {
+        accessMode = SZP_RANDOMACCESS;
+    }
+    else if (strcmp(accessType, "nonrandom") == 0)
+    {
+        accessMode = SZP_NONRANDOMACCESS;
+    }
+    else
+    {
+        printf("Error: access type must be 'random' or 'nonrandom'!\n");
+        exit(0);
     }
 
     sprintf(outputFilePath, "%s.out", zipFilePath);
@@ -75,8 +92,7 @@ int main(int argc, char *argv[])
 
     cost_start();
 
-    void *data = szp_decompress(SZP_RANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
-    // void *data = szp_decompress(SZP_NONRANDOMACCESS, sz_dataType, bytes, byteLength, nbEle, blockSize);
+    void *data = szp_decompress(accessMode, sz_dataType, bytes, byteLength, nbEle, blockSize);
     cost_end();
     
     free(bytes);
