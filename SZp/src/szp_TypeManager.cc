@@ -147,7 +147,7 @@ size_t Jiajun_convertUInt2Byte_fast_1b_args(unsigned int *intArray, size_t intAr
 
 size_t Jiajun_convertUInt2Byte_fast_2b_args(unsigned int *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
-	register unsigned char tmp = 0;
+	unsigned char tmp = 0;
 	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
@@ -251,43 +251,6 @@ size_t Jiajun_convertUInt2Byte_fast_3b_args(unsigned int *timeStepType, size_t t
 
 	return byteLength;
 }
-
-// size_t Jiajun_convertUInt2Byte_fast_3b_args(unsigned int *timeStepType, size_t timeStepTypeLength, unsigned char *result)
-// {
-//     size_t i = 0, k = 0, byteLength = 0, n = 0;
-//     if (timeStepTypeLength % 8 == 0)
-//         byteLength = timeStepTypeLength * 3 / 8;
-//     else
-//         byteLength = timeStepTypeLength * 3 / 8 + 1;
- 
-//     unsigned char tmp = 0;
-//     for (n = 0; n < timeStepTypeLength; n++)
-//     {
-//         k = n % 8;
-//         // 直接从高位获取3位，而不是清除低位后从最低位获取
-//         unsigned char bits = (timeStepType[n] >> (32 - 3)) & 0x07; // 获取最高3位
-        
-//         switch (k)
-//         {
-//         case 0:
-//             tmp = tmp | (bits << 5);
-//             break;
-//         case 1:
-//             tmp = tmp | (bits << 2);
-//             break;
-//         case 2:
-//             tmp = tmp | (bits >> 1);
-//             (result)[i++] = tmp;
-//             tmp = 0 | (bits << 7);
-//             break;
-//         // ... 其他case类似修改
-//         }
-//     }
-//     if (k != 7) 
-//         (result)[i] = tmp;
- 
-//     return byteLength;
-// }
 
 size_t Jiajun_convertUInt2Byte_fast_4b_args(unsigned int *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
@@ -1037,7 +1000,7 @@ void convertByteArray2IntArray_fast_1b(size_t intArrayLength, unsigned char *byt
 
 inline size_t convertIntArray2ByteArray_fast_2b_args(unsigned char *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
-	register unsigned char tmp = 0;
+	unsigned char tmp = 0;
 	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
