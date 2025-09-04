@@ -147,7 +147,7 @@ size_t Jiajun_convertUInt2Byte_fast_1b_args(unsigned int *intArray, size_t intAr
 
 size_t Jiajun_convertUInt2Byte_fast_2b_args(unsigned int *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
-	register unsigned char tmp = 0;
+	unsigned char tmp = 0;
 	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
@@ -1000,7 +1000,7 @@ void convertByteArray2IntArray_fast_1b(size_t intArrayLength, unsigned char *byt
 
 inline size_t convertIntArray2ByteArray_fast_2b_args(unsigned char *timeStepType, size_t timeStepTypeLength, unsigned char *result)
 {
-	register unsigned char tmp = 0;
+	unsigned char tmp = 0;
 	size_t i, byteLength = 0;
 	if (timeStepTypeLength % 4 == 0)
 		byteLength = timeStepTypeLength * 2 / 8;
