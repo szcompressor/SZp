@@ -215,43 +215,19 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
-        unsigned int signbytelength = 0; 
+        unsigned int signbytelength = 0;
         unsigned int savedbitsbytelength = 0;
-       
+
         for (i = lo + 1; i < hi; i = i + block_size)
         {
             size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
             if (current_block_size == 0) continue;
 
-            max = 0;
-            for (j = 0; j < current_block_size; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                }
-                else
-                {
-                    if (diff < 0)
-                    {
-                        temp_sign_arr[j] = 1;
-                        temp_predict_arr[j] = -diff;
-                    }
-                    else
-                    {
-                        temp_sign_arr[j] = 0;
-                        temp_predict_arr[j] = diff;
-                    }
-                    if (max < temp_predict_arr[j])
-                        max = temp_predict_arr[j];
-                }
-            }
+            // SIMD-optimized: Fused quantize + delta encoding with sign/magnitude separation
+            szp_quantize_and_delta_simd(&op[i], current_block_size, (float)inver_bound,
+                                        temp_sign_arr, temp_predict_arr, &max, &prior);
 
-            if (max == 0) 
+            if (max == 0)
             {
                 block_pointer[0] = 0;
                 block_pointer++;
@@ -261,15 +237,15 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
             {
                 bit_count = (int)(log2f(max)) + 1;
                 block_pointer[0] = bit_count;
-                
+
                 outSize_perthread++;
                 block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer);
                 block_pointer += signbytelength;
                 outSize_perthread += signbytelength;
-                
+
                 savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
-                
+
                 block_pointer += savedbitsbytelength;
                 outSize_perthread += savedbitsbytelength;
             }
@@ -290,7 +266,7 @@ szp_float_openmp_threadblock(float *oriData, size_t *outSize, float absErrBound,
         }
 #pragma omp barrier
         memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
-        
+
         free(outputBytes_perthread);
         free(temp_sign_arr);
         free(temp_predict_arr);
@@ -380,43 +356,19 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
         
         unsigned char *temp_sign_arr = (unsigned char *)malloc(block_size * sizeof(unsigned char));
         unsigned int *temp_predict_arr = (unsigned int *)malloc(block_size * sizeof(unsigned int));
-        unsigned int signbytelength = 0; 
+        unsigned int signbytelength = 0;
         unsigned int savedbitsbytelength = 0;
-        
+
         for (i = lo + 1; i < hi; i = i + block_size)
         {
             size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
             if (current_block_size == 0) continue;
 
-            max = 0;
-            for (j = 0; j < current_block_size; j++)
-            {
-                current = (op[i + j]) * inver_bound;
-                diff = current - prior;
-                prior = current;
-                if (diff == 0)
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = 0;
-                }
-                else
-                {
-                    if (diff < 0)
-                    {
-                        temp_sign_arr[j] = 1;
-                        temp_predict_arr[j] = -diff;
-                    }
-                    else
-                    {
-                        temp_sign_arr[j] = 0;
-                        temp_predict_arr[j] = diff;
-                    }
-                    if (max < temp_predict_arr[j])
-                        max = temp_predict_arr[j];
-                }
-            }
+            // SIMD-optimized: Fused quantize + delta encoding with sign/magnitude separation
+            szp_quantize_and_delta_simd(&op[i], current_block_size, (float)inver_bound,
+                                        temp_sign_arr, temp_predict_arr, &max, &prior);
 
-            if (max == 0) 
+            if (max == 0)
             {
                 block_pointer[0] = 0;
                 block_pointer++;
@@ -426,15 +378,15 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
             {
                 bit_count = (int)(log2f(max)) + 1;
                 block_pointer[0] = bit_count;
-                
+
                 outSize_perthread++;
                 block_pointer++;
-                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+                signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer);
                 block_pointer += signbytelength;
                 outSize_perthread += signbytelength;
-                
+
                 savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
-                
+
                 block_pointer += savedbitsbytelength;
                 outSize_perthread += savedbitsbytelength;
             }
@@ -449,32 +401,32 @@ void szp_float_openmp_threadblock_arg(unsigned char *output, float *oriData, siz
             for (i = 1; i < nbThreads; i++)
             {
                 offsets_perthread_arr[i] = offsets_perthread_arr[i - 1] + outSize_perthread_arr[i - 1];
-                
+
             }
             (*outSize) += offsets_perthread_arr[nbThreads - 1] + outSize_perthread_arr[nbThreads - 1];
             memcpy(outputBytes, offsets_perthread_arr, nbThreads * sizeof(size_t));
-            
+
         }
 #pragma omp barrier
         memcpy(real_outputBytes + offsets_perthread_arr[tid], outputBytes_perthread, outSize_perthread);
-        
+
         free(outputBytes_perthread);
         free(temp_sign_arr);
         free(temp_predict_arr);
 #pragma omp barrier
 #pragma omp single
         {
-            
+
             free(outSize_perthread_arr);
             free(offsets_perthread_arr);
         }
 
-       
+
     }
-    
+
     (*outSize) += sizeof(float);
 
-    
+
 #else
     printf("Error! OpenMP not supported!\n");
 #endif
@@ -528,42 +480,19 @@ void szp_float_single_thread_arg(unsigned char *output, float *oriData, size_t *
     
     unsigned char *temp_sign_arr = (unsigned char *)malloc(blockSize * sizeof(unsigned char));
     unsigned int *temp_predict_arr = (unsigned int *)malloc(blockSize * sizeof(unsigned int));
-    unsigned int signbytelength = 0; 
+    unsigned int signbytelength = 0;
     unsigned int savedbitsbytelength = 0;
-    
+
     for (size_t i = lo + 1; i < hi; i = i + block_size)
     {
         size_t current_block_size = (i + block_size > hi) ? (hi - i) : block_size;
         if (current_block_size == 0) continue;
 
-        max = 0;
-        for (size_t j = 0; j < current_block_size; j++)
-        {
-            current = (op[i + j]) * inver_bound;
-            diff = current - prior;
-            prior = current;
-            if (diff == 0)
-            {
-                temp_sign_arr[j] = 0;
-                temp_predict_arr[j] = 0;
-            }
-            else
-            {
-                if (diff < 0)
-                {
-                    temp_sign_arr[j] = 1;
-                    temp_predict_arr[j] = -diff;
-                }
-                else
-                {
-                    temp_sign_arr[j] = 0;
-                    temp_predict_arr[j] = diff;
-                }
-                if (max < temp_predict_arr[j])
-                    max = temp_predict_arr[j];
-            }
-        }
-        if (max == 0) 
+        // SIMD-optimized: Fused quantize + delta encoding with sign/magnitude separation
+        szp_quantize_and_delta_simd(&op[i], current_block_size, (float)inver_bound,
+                                    temp_sign_arr, temp_predict_arr, &max, &prior);
+
+        if (max == 0)
         {
             block_pointer[0] = 0;
             block_pointer++;
@@ -573,15 +502,15 @@ void szp_float_single_thread_arg(unsigned char *output, float *oriData, size_t *
         {
             bit_count = (int)(log2f(max)) + 1;
             block_pointer[0] = bit_count;
-            
+
             outSize_perthread++;
             block_pointer++;
-            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer); 
+            signbytelength = convertIntArray2ByteArray_fast_1b_args(temp_sign_arr, current_block_size, block_pointer);
             block_pointer += signbytelength;
             outSize_perthread += signbytelength;
-            
+
             savedbitsbytelength = Jiajun_save_fixed_length_bits(temp_predict_arr, current_block_size, block_pointer, bit_count);
-            
+
             block_pointer += savedbitsbytelength;
             outSize_perthread += savedbitsbytelength;
         }
