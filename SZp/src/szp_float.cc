@@ -14,6 +14,7 @@
 #include <math.h>
 #include "szp_TypeManager.h"
 #include "szp_CompressionToolkit.h"
+#include "szp_simd.h"
 
 #ifdef _OPENMP
 #include "omp.h"

@@ -41,9 +41,30 @@ add_library(
         SZp/src/szp_rw.cc
         SZp/src/szpd_double.cc
         SZp/src/szpd_float.cc
+        SZp/src/szp_simd.cc
 )
 target_compile_features(SZp PUBLIC c_std_99 cxx_std_14)
 target_link_libraries(SZp PUBLIC PkgConfig::ZSTD OpenMP::OpenMP_CXX)
+
+# Enable SIMD optimizations based on platform
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|AMD64)")
+    # Enable AVX2 for x86_64 processors
+    if(MSVC)
+        target_compile_options(SZp PRIVATE /arch:AVX2)
+    else()
+        # GCC/Clang: Enable AVX2 and auto-vectorization hints
+        target_compile_options(SZp PRIVATE -mavx2 -mfma)
+        # Add additional optimization flags for better vectorization (GCC only)
+        if(CMAKE_BUILD_TYPE STREQUAL "Release" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(SZp PRIVATE -ftree-vectorize -fopt-info-vec-optimized)
+        endif()
+    endif()
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+    # Enable NEON for ARM processors
+    if(NOT MSVC)
+        target_compile_options(SZp PRIVATE -march=armv8-a+simd)
+    endif()
+endif()
 target_include_directories(SZp
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/SZp/include>
